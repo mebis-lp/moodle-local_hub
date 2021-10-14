@@ -188,7 +188,7 @@ class local_hub {
             $site->prioritise = 0;
             $this->update_site($site);
 
-            add_to_log(SITEID, 'local_hub', 'site unregistration', '', $site->id);
+            // add_to_log(SITEID, 'local_hub', 'site unregistration', '', $site->id);
         }
     }
 
@@ -459,57 +459,77 @@ class local_hub {
             $wheresql .= " privacy = :visibility";
             $sqlparams['visibility'] = $privacy;
         }
+        // $fo = fopen(__DIR__ . "/log.txt", "a+");
+        // fwrite($fo, json_encode($options)."\n\n");
+        // if ($options['downloadable']) {
+        //     if (!empty($wheresql)) {
+        //         $wheresql .= " AND";
+        //     }
+        //     if (!empty($options['downloadable'])) {
+        //         $wheresql .= " downloadurl != ''";
+        //     }
+        // }
+
+        // if (!empty($wheresql)) {
+        //     $wheresql .= " AND";
+        // }
+        // if ($options['enrolable']) {
+        //     $wheresql .= " enrolable = :enrolable";
+        //     $sqlparams['enrolable'] = $options['enrolable'];
+        // } else {
+        //     $wheresql .= " downloadurl != ''";
+        // }
 
         if (!empty($options['ids'])) {
             if (!empty($wheresql)) {
                 $wheresql .= " AND";
             }
-            $idlist = '(';
-            foreach ($options['ids'] as $id) {
-                if ($idlist == '(') {
-                    $idlist .= $id;
-                } else {
-                    $idlist .= ',' . $id;
-                }
-            }
-            $idlist .= ')';
-            $wheresql .= " id IN " . $idlist;
+            $idlist = '(' . join(',', $options['ids']) . ')';
+            // foreach ($options['ids'] as $id) {
+            //     if ($idlist == '(') {
+            //         $idlist .= $id;
+            //     } else {
+            //         $idlist .= ',' . $id;
+            //     }
+            // }
+            // $idlist .= ')';
+            $wheresql .= " c.id IN " . $idlist;
         }
 
         if (!empty($options['sitecourseids'])) {
             if (!empty($wheresql)) {
                 $wheresql .= " AND";
             }
-            $idlist = '(';
-            foreach ($options['sitecourseids'] as $sitecourseid) {
-                if ($idlist == '(') {
-                    $idlist .= $sitecourseid;
-                } else {
-                    $idlist .= ',' . $sitecourseid;
-                }
-            }
-            $idlist .= ')';
-            $wheresql .= " sitecourseid IN " . $idlist;
+            $idlist = '(' . join(',', $options['sitecourseids']) . ')';
+            // foreach ($options['sitecourseids'] as $sitecourseid) {
+            //     if ($idlist == '(') {
+            //         $idlist .= $sitecourseid;
+            //     } else {
+            //         $idlist .= ',' . $sitecourseid;
+            //     }
+            // }
+            // $idlist .= ')';
+            $wheresql .= " c.sitecourseid IN " . $idlist;
         }
 
         //check that one of the downloadable/enrollable option is false (otherwise display both kind of course)
-        if (!((key_exists('downloadable', $options) and $options['downloadable'])
-                and
-                (key_exists('enrollable', $options) and $options['enrollable']))) {
+        // if (!((key_exists('downloadable', $options) and $options['downloadable'])
+        //         and
+        //         (key_exists('enrollable', $options) and $options['enrollable']))) {
 
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
+        //     if (!empty($wheresql)) {
+        //         $wheresql .= " AND";
+        //     }
 
-            if (key_exists('downloadable', $options) and $options['downloadable']) {
-                $wheresql .= " enrollable = 0";
-            } else if (key_exists('enrollable', $options) and $options['enrollable']) {
-                $wheresql .= " enrollable = 1";
-            } else { //this case means that we are searching course as downloadable == 0 and enrollable == 0
-                $wheresql .= " enrollable = 4"; //=> return nothing,
-                //it should never be ask to return a course not enrollable AND not downloadable
-            }
-        }
+        //     if (key_exists('downloadable', $options) and $options['downloadable']) {
+        //         $wheresql .= " enrollable = 0";
+        //     } else if (key_exists('enrollable', $options) and $options['enrollable']) {
+        //         $wheresql .= " enrollable = 1";
+        //     } else { //this case means that we are searching course as downloadable == 0 and enrollable == 0
+        //         $wheresql .= " enrollable = 4"; //=> return nothing,
+        //         //it should never be ask to return a course not enrollable AND not downloadable
+        //     }
+        // }
 
         if (!empty($options['siteid'])) {
             if (!empty($wheresql)) {
@@ -563,6 +583,8 @@ class local_hub {
 
             $sql = 'SELECT c.* ' . $extracolumns . 'FROM {hub_course_directory} c ' . $joinsql . ' WHERE '
                     . $wheresql . $ordersql;
+            // fwrite($fo, $sql);
+            // fwrite($fo, "\n\n" . json_encode($sqlparams));
 
             $courses = $DB->get_records_sql($sql, $sqlparams, $limitfrom, $limitnum);
         }
@@ -991,7 +1013,7 @@ class local_hub {
             //delete outcomes
             $this->update_course_outcomes($courseid, null);
 
-            add_to_log(SITEID, 'local_hub', 'course unregistration', '', $course->id);
+            // add_to_log(SITEID, 'local_hub', 'course unregistration', '', $course->id);
         }
     }
 
@@ -1038,13 +1060,15 @@ class local_hub {
             $course->id = $existingenrollablecourse->id;
             $courseid = $existingenrollablecourse->id;
             $this->update_course($course);
-            add_to_log(SITEID, 'local_hub', 'course update', '', $courseid);
+            // add_to_log(SITEID, 'local_hub', 'course update', '', $courseid);
 
             //delete previous course content
             $this->delete_course_contents($courseid);
         } else {
+            // fwrite($fo, "\n1: " . json_encode($course));
+
             $courseid = $this->add_course($course);
-            add_to_log(SITEID, 'local_hub', 'course registration', '', $courseid);
+            // add_to_log(SITEID, 'local_hub', 'course registration', '', $courseid);
         }
 
         //update outcomes
@@ -1060,9 +1084,12 @@ class local_hub {
         if (!empty($course->coverage)) {
             $tags = explode(',', $course->coverage);
         }
-        require_once($CFG->dirroot . '/tag/lib.php');
-        tag_set('hub_course_directory', $courseid, $tags);
-
+        // +++ MBS-HACK (Peter Mayer)
+        // require_once($CFG->dirroot . '/tag/lib.php');
+        // tag_set('hub_course_directory', $courseid, $tags);
+        // $cctx = context_course::instance_by_id($courseid);
+        // core_tag_tag::set_item_tags('local_hub', 'hub_course_directory', $courseid, $cctx, $tags);
+        // --- MBS-HACK (Peter Mayer)
         //add new course contents
         if (!empty($course->contents)) {
             foreach ($course->contents as $content) {
@@ -1088,7 +1115,8 @@ class local_hub {
                 }
             }
         }
-
+        // $fo = fopen(__DIR__ . "/log.txt", "w+");
+        // fwrite($fo, "\n" . json_encode($courseid));
         return $courseid;
     }
 
@@ -1245,7 +1273,7 @@ class local_hub {
         if (!empty($siteurltoupdate)) {
             //we just log, do not send an email to admin for update
             //(an email was sent previously if the url or name changed)
-            add_to_log(SITEID, 'local_hub', 'site update', '', $siteinfo->id);
+            // add_to_log(SITEID, 'local_hub', 'site update', '', $siteinfo->id);
         } else {
             // Send email to the hub administrator.
 
@@ -1265,7 +1293,7 @@ class local_hub {
             email_to_user(get_admin(), core_user::get_support_user(),
                     get_string('emailtitlesiteadded', 'local_hub', $emailinfo->name),
                     get_string('emailmessagesiteadded', 'local_hub', $emailinfo));
-            add_to_log(SITEID, 'local_hub', 'site registration', '', $site->id);
+            // add_to_log(SITEID, 'local_hub', 'site registration', '', $site->id);
         }
 
         return $sitetohubcommunication->token;
@@ -1746,7 +1774,7 @@ class local_hub {
 
             $rss = optional_param('rss', false, PARAM_BOOL);
             $rss = empty($rss) ? '' : 'rss';
-            add_to_log(SITEID, 'local_hub', 'course redirection ' . $rss, '', $redirectcourseid);
+            // add_to_log(SITEID, 'local_hub', 'course redirection ' . $rss, '', $redirectcourseid);
             redirect(new moodle_url($courseurl));
         }
 
@@ -1779,7 +1807,7 @@ class local_hub {
         //Retrieve courses by web service
         $options = array();
         //special shortcut if a course id is given in param, we search straight forward this id
-        if ($courseid = optional_param('courseid', 0, PARAM_INTEGER)) {
+        if ($courseid = optional_param('courseid', 0, PARAM_INT)) {
             $options['onlyvisible'] = true;
             $options['ids'] = array($courseid);
             $options['downloadable'] = true;
@@ -1793,7 +1821,7 @@ class local_hub {
             }
         } else {
             if (!empty($fromform) and optional_param('submitbutton', 0, PARAM_ALPHANUMEXT)) {
-                $downloadable = optional_param('downloadable', false, PARAM_INTEGER);
+                $downloadable = optional_param('downloadable', false, PARAM_INT);
 
                 if (!empty($fromform->coverage)) {
                     $options['coverage'] = $fromform->coverage;
@@ -1945,7 +1973,7 @@ class local_hub {
         echo $OUTPUT->header();
 
         //notification message sent to publisher
-        if (optional_param('messagesent', 0, PARAM_INTEGER)) {
+        if (optional_param('messagesent', 0, PARAM_INT)) {
             echo $OUTPUT->notification(get_string('messagesentsuccess', 'local_hub'), 'notifysuccess');
         }
 
@@ -2173,9 +2201,9 @@ function update_sendy_list_batch($sites, $chunksize=150) {
          $sendyapikey = $CFG->sendyapikey;
     }
 
-    if (empty($sendyurl) || empty($sendylistid) || empty($sendyapikey)) {
-        print_error('mailinglistnotconfigured', 'local_hub');
-    }
+    // if (empty($sendyurl) || empty($sendylistid) || empty($sendyapikey)) {
+    //     print_error('mailinglistnotconfigured', 'local_hub');
+    // }
 
     $subscribers = array();
     $unsubscribers = array();

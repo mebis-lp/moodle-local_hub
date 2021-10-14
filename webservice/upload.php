@@ -26,7 +26,7 @@
  */
 require('../../../config.php');
 require_once($CFG->dirroot . '/local/hub/lib.php');
-require_once($CFG->dirroot . '/course/publish/lib.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
+// require_once($CFG->dirroot . '/admin/tool/customhub/classes/course_publish_manager.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
 
 
 $token = optional_param('token', '', PARAM_ALPHANUM);
@@ -62,4 +62,3 @@ if (!empty($token) && !empty($communication) and get_config('local_hub', 'hubena
         }
     }
 }
-

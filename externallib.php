@@ -232,9 +232,9 @@ class local_hub_external extends external_api {
 
         //delete the web service token
         require_once($CFG->dirroot . '/webservice/lib.php');
-        $webservice_manager = new webservice();
-        $tokentodelete = $webservice_manager->get_user_ws_token($communication->token);
-        $webservice_manager->delete_user_ws_token($tokentodelete->id);
+        $webservicemanager = new webservice();
+        $tokentodelete = $webservicemanager->get_user_ws_token($communication->token);
+        $webservicemanager->delete_user_ws_token($tokentodelete->id);
 
         //delete the site communication
         $hub->delete_communication($communication);
@@ -247,7 +247,7 @@ class local_hub_external extends external_api {
      * @return boolean
      */
     public static function unregister_site_returns() {
-        return new external_value(PARAM_INTEGER, '1 for successfull');
+        return new external_value(PARAM_INT, '1 for successfull');
     }
 
     /**
@@ -298,7 +298,7 @@ class local_hub_external extends external_api {
      * @return boolean
      */
     public static function unregister_courses_returns() {
-        return new external_value(PARAM_INTEGER, '1 for successfull');
+        return new external_value(PARAM_INT, '1 for successfull');
     }
 
     /**
@@ -326,7 +326,7 @@ class local_hub_external extends external_api {
                                         'audience' => new external_value(PARAM_ALPHA, 'audience'),
                                         'educationallevel' => new external_value(PARAM_ALPHA, 'educational level'),
                                         'creatornotes' => new external_value(PARAM_RAW, 'creator notes'),
-                                        'creatornotesformat' => new external_value(PARAM_INTEGER, 'notes format'),
+                                        'creatornotesformat' => new external_value(PARAM_INT, 'notes format'),
                                         'demourl' => new external_value(PARAM_URL, 'demo URL', VALUE_OPTIONAL),
                                         'courseurl' => new external_value(PARAM_URL, 'course URL', VALUE_OPTIONAL),
                                         'enrollable' => new external_value(PARAM_BOOL, 'is the course enrollable', VALUE_DEFAULT, 0),
@@ -354,6 +354,7 @@ class local_hub_external extends external_api {
      * @return array ids of created courses
      */
     public static function register_courses($courses) {
+
         global $DB;
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
@@ -376,7 +377,7 @@ class local_hub_external extends external_api {
             //site setting (overwrite the hub setting value)
             $maxpublication = $site->publicationmax;
         } else { //hub setting
-            $maxpublication = get_config('local_hub', 'maxcoursesperday');
+            $maxpublication = 2000; // get_config('local_hub', 'maxcoursesperday');
         }
         if ($maxpublication !== false) {
 
@@ -389,6 +390,7 @@ class local_hub_external extends external_api {
             $lastpublishedcourses = $hub->get_courses($options);
 
             if (!empty($lastpublishedcourses)) {
+                
                 if (count($lastpublishedcourses) >= $maxpublication) {
                     if ($maxpublication > 0) {
                         //get the oldest publication
@@ -429,7 +431,7 @@ class local_hub_external extends external_api {
      * @return boolean
      */
     public static function register_courses_returns() {
-        return new external_multiple_structure(new external_value(PARAM_INTEGER, 'new id from the course directory table'));
+        return new external_multiple_structure(new external_value(PARAM_INT, 'new id from the course directory table'));
     }
 
     /**
@@ -444,8 +446,8 @@ class local_hub_external extends external_api {
                     'enrollable' => new external_value(PARAM_BOOL, 'course can be enrollable'),
                     'options' => new external_single_structure(
                             array(
-                                'ids' => new external_multiple_structure(new external_value(PARAM_INTEGER, 'id of a course in the hub course directory'), 'ids of course', VALUE_OPTIONAL),
-                                'sitecourseids' => new external_multiple_structure(new external_value(PARAM_INTEGER, 'id of a course in the site'), 'ids of course in the site', VALUE_OPTIONAL),
+                                'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the hub course directory'), 'ids of course', VALUE_OPTIONAL),
+                                'sitecourseids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the site'), 'ids of course in the site', VALUE_OPTIONAL),
                                 'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
                                 'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
                                 'subject' => new external_value(PARAM_ALPHANUM, 'subject', VALUE_OPTIONAL),
@@ -454,7 +456,7 @@ class local_hub_external extends external_api {
                                 'language' => new external_value(PARAM_ALPHANUMEXT, 'language', VALUE_OPTIONAL),
                                 'orderby' => new external_value(PARAM_ALPHA, 'orderby method: newest, eldest, publisher, fullname, ratingaverage', VALUE_OPTIONAL),
                                 'givememore' => new external_value(PARAM_INT, 'next range of result - range size being set by the hub server ', VALUE_OPTIONAL),
-                                'allsitecourses' => new external_value(PARAM_INTEGER,
+                                'allsitecourses' => new external_value(PARAM_INT,
                                         'if 1 return all not visible and visible courses whose siteid is the site
                                          matching token. Only courses of this site are returned.
                                          givememore parameter is ignored if this param = 1.
@@ -545,7 +547,6 @@ class local_hub_external extends external_api {
 
         $courses = $hub->get_courses($cleanedoptions, $limitfrom, $maxcourses);
         $coursetotal = $hub->get_courses($cleanedoptions, 0, 0, true);
-
 
         //load ratings and comments
         if (!empty($courses)) {
@@ -638,12 +639,14 @@ class local_hub_external extends external_api {
             //get backup size
             $returnthecourse = true;
             if (!$course->enrollable) {
-                if ($hub->backup_exits($course->id)) {
-                    $courseinfo['backupsize'] = $hub->get_backup_size($course->id);
-                } else {
-                    // We don't return the course when backup file is not found.
-                    $returnthecourse = false;
-                }
+                // Problem, da datadir struktur in backup_exits nicht mehr stimmt.
+
+                // if ($hub->backup_exits($course->id)) {
+                //     $courseinfo['backupsize'] = $hub->get_backup_size($course->id);
+                // } else {
+                //     // We don't return the course when backup file is not found.
+                //     $returnthecourse = false;
+                // }
             }
 
             if ($returnthecourse) {
@@ -663,7 +666,7 @@ class local_hub_external extends external_api {
             array('courses' => new external_multiple_structure(
                     new external_single_structure(
                     array(
-                        'id' => new external_value(PARAM_INTEGER, 'id'),
+                        'id' => new external_value(PARAM_INT, 'id'),
                         'fullname' => new external_value(PARAM_TEXT, 'course name'),
                         'shortname' => new external_value(PARAM_TEXT, 'course short name'),
                         'description' => new external_value(PARAM_TEXT, 'course description'),
@@ -680,7 +683,7 @@ class local_hub_external extends external_api {
                         'audience' => new external_value(PARAM_ALPHA, 'audience'),
                         'educationallevel' => new external_value(PARAM_ALPHA, 'educational level'),
                         'creatornotes' => new external_value(PARAM_RAW, 'creator notes'),
-                        'creatornotesformat' => new external_value(PARAM_INTEGER, 'notes format'),
+                        'creatornotesformat' => new external_value(PARAM_INT, 'notes format'),
                         'demourl' => new external_value(PARAM_URL, 'demo URL', VALUE_OPTIONAL),
                         'courseurl' => new external_value(PARAM_URL, 'course URL', VALUE_OPTIONAL),
                         'backupsize' => new external_value(PARAM_INT, 'course backup size in bytes', VALUE_OPTIONAL),
@@ -712,7 +715,7 @@ class local_hub_external extends external_api {
                                                         'fullname' => new external_value(PARAM_TEXT, 'the outcome fullname')
                                             )), 'outcomes', VALUE_OPTIONAL)
                     ), 'course info')),
-                'coursetotal' => new external_value(PARAM_INTEGER, 'total number of courses')), 'courses result');
+                'coursetotal' => new external_value(PARAM_INT, 'total number of courses')), 'courses result');
 }
 
     /**
@@ -726,7 +729,7 @@ class local_hub_external extends external_api {
                     'search' => new external_value(PARAM_TEXT, 'string to search'),
                     'options' => new external_single_structure(
                             array(
-                                'urls' => new external_multiple_structure(new external_value(PARAM_INTEGER, 'url'), 'urls to look for', VALUE_OPTIONAL),
+                                'urls' => new external_multiple_structure(new external_value(PARAM_INT, 'url'), 'urls to look for', VALUE_OPTIONAL),
                             ), '')
                 )
         );
@@ -777,7 +780,7 @@ class local_hub_external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                            'id' => new external_value(PARAM_INTEGER, 'id'),
+                            'id' => new external_value(PARAM_INT, 'id'),
                             'name' => new external_value(PARAM_TEXT, 'name'),
                             'url' => new external_value(PARAM_URL, 'url'),
                         ), 'site info')
@@ -886,7 +889,7 @@ class local_hub_external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                         array(
-                            'hubid' => new external_value(PARAM_INTEGER, 'id'),
+                            'hubid' => new external_value(PARAM_INT, 'id'),
                             'sitename' => new external_value(PARAM_TEXT, 'site name'),
                             'url' => new external_value(PARAM_URL, 'site url'),
                             'description' => new external_value(PARAM_RAW, 'site description'), //allows for multilang in newer data.

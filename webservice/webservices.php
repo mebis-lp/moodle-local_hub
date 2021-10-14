@@ -31,11 +31,9 @@ require('../../../config.php');
 require_once($CFG->dirroot."/local/hub/webservice/locallib.php");
 
 if (!webservice_protocol_is_enabled('xmlrpc') and !get_config('local_hub', 'hubenabled')) {
-    die;
+    die("Webservice is disabled!");
 }
 
 $server = new hub_webservice_xmlrpc_server(WEBSERVICE_AUTHMETHOD_PERMANENT_TOKEN);
 $server->run();
 die;
-
-

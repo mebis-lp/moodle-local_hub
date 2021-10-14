@@ -69,9 +69,9 @@ if (!empty($fromform) and confirm_sesskey()) {
     set_config('enablerssfeeds', empty($fromform->enablerssfeeds)?0:$fromform->enablerssfeeds, 'local_hub');
     set_config('rsssecret', empty($fromform->rsssecret)?'':$fromform->rsssecret, 'local_hub');
 
-    set_config('sendyurl', empty($fromform->sendyurl)?'':$fromform->sendyurl, 'local_hub');
-    set_config('sendylistid', empty($fromform->sendylistid)?'':$fromform->sendylistid, 'local_hub');
-    set_config('sendyapikey', empty($fromform->sendyapikey)?'':$fromform->sendyapikey, 'local_hub');
+    // set_config('sendyurl', empty($fromform->sendyurl)?'':$fromform->sendyurl, 'local_hub');
+    // set_config('sendylistid', empty($fromform->sendylistid)?'':$fromform->sendylistid, 'local_hub');
+    // set_config('sendyapikey', empty($fromform->sendyapikey)?'':$fromform->sendyapikey, 'local_hub');
 
     set_config('language', $fromform->lang, 'local_hub');
 
@@ -82,37 +82,37 @@ if (!empty($fromform) and confirm_sesskey()) {
     //if privacy settings is downgraded to 'private', then unregister from the hub
     $currentprivacy = get_config('local_hub', 'privacy');
     $hubmanager = new local_hub();
-    $hubtodirectorycommunication = $hubmanager->get_communication(WSCLIENT, HUBDIRECTORY, HUB_HUBDIRECTORYURL);
-    if (($currentprivacy != HUBPRIVATE and $fromform->privacy == HUBPRIVATE) and !empty($hubtodirectorycommunication)
-            and !empty($hubtodirectorycommunication->confirmed)) {
+    // $hubtodirectorycommunication = $hubmanager->get_communication(WSCLIENT, HUBDIRECTORY, HUB_HUBDIRECTORYURL);
+    // if (($currentprivacy != HUBPRIVATE and $fromform->privacy == HUBPRIVATE) and !empty($hubtodirectorycommunication)
+    //         and !empty($hubtodirectorycommunication->confirmed)) {
 
-        $directorytohubcommunication = $hubmanager->get_communication(WSSERVER, HUBDIRECTORY, HUB_HUBDIRECTORYURL);
+    //     $directorytohubcommunication = $hubmanager->get_communication(WSSERVER, HUBDIRECTORY, HUB_HUBDIRECTORYURL);
 
-        $function = 'hubdirectory_unregister_hub';
-        $params = array();
-        $serverurl = HUB_HUBDIRECTORYURL . "/local/hubdirectory/webservice/webservices.php";
-        require_once($CFG->dirroot . "/webservice/xmlrpc/lib.php");
-        $xmlrpcclient = new webservice_xmlrpc_client($serverurl, $hubtodirectorycommunication->token);
-        try {
-            $result = $xmlrpcclient->call($function, $params);
-        } catch (Exception $e) {
-            $error = $OUTPUT->notification(get_string('failunregistrationofprivate', 'local_hub', $e->getMessage()));
-        }
+    //     $function = 'hubdirectory_unregister_hub';
+    //     $params = array();
+    //     $serverurl = HUB_HUBDIRECTORYURL . "/local/hubdirectory/webservice/webservices.php";
+    //     require_once($CFG->dirroot . "/webservice/xmlrpc/lib.php");
+    //     $xmlrpcclient = new webservice_xmlrpc_client($serverurl, $hubtodirectorycommunication->token);
+    //     try {
+    //         $result = $xmlrpcclient->call($function, $params);
+    //     } catch (Exception $e) {
+    //         $error = $OUTPUT->notification(get_string('failunregistrationofprivate', 'local_hub', $e->getMessage()));
+    //     }
 
-        if (empty($error)) {
-            //delete the web service token
-            $webservice_manager = new webservice();
-            $tokentodelete = $webservice_manager->get_user_ws_token($directorytohubcommunication->token);
-            $webservice_manager->delete_user_ws_token($tokentodelete->id);
+    //     if (empty($error)) {
+    //         //delete the web service token
+    //         $webservice_manager = new webservice();
+    //         $tokentodelete = $webservice_manager->get_user_ws_token($directorytohubcommunication->token);
+    //         $webservice_manager->delete_user_ws_token($tokentodelete->id);
 
-            //delete the communication
-            $hubmanager->delete_communication($directorytohubcommunication);
-            $hubmanager->delete_communication($hubtodirectorycommunication);
-            echo $OUTPUT->notification(get_string('unregistrationofprivate', 'local_hub'), 'notifysuccess');
-        } else {
-            echo $error;
-        }
-    }
+    //         //delete the communication
+    //         $hubmanager->delete_communication($directorytohubcommunication);
+    //         $hubmanager->delete_communication($hubtodirectorycommunication);
+    //         echo $OUTPUT->notification(get_string('unregistrationofprivate', 'local_hub'), 'notifysuccess');
+    //     } else {
+    //         echo $error;
+    //     }
+    // }
     set_config('privacy', $fromform->privacy, 'local_hub');
 
     //save the hub logo
@@ -167,4 +167,3 @@ if (!get_config('moodle', 'extendedusernamechars')) {
 $hubsettingsform->display();
 
 echo $OUTPUT->footer();
-

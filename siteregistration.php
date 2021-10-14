@@ -154,9 +154,9 @@ if (!empty($freshmoodletoken) and !empty($freshmoodleid)) {
                 set_config($freshmoodleid, null, 'local_hub_unregistration');
 
                 //log the fresh install
-                add_to_log(SITEID, 'local_hub', 'fresh/moved site on registered url', '',
-                        $freshregistration['newsite']['id'] . ', ' . $freshregistration['newsite']['url']
-                        .',' . $freshregistration['oldsite']['url']);
+                // add_to_log(SITEID, 'local_hub', 'fresh/moved site on registered url', '',
+                //         $freshregistration['newsite']['id'] . ', ' . $freshregistration['newsite']['url']
+                //         .',' . $freshregistration['oldsite']['url']);
 
                 //redirect to the new Moodle site to confirm the registration.
                 //This could fail if the administrator do not log into the Moodle site.
@@ -231,9 +231,9 @@ if ($secretexists and !$urlexists) { //the site has been moved or the site has b
             $newtoken = $hub->register_site($newsitevalues, $sitewithsamesecret->url);
 
             //log the moved site
-            add_to_log(SITEID, 'local_hub', 'site moved', '',
-                    'id:' . $sitewithsamesecret->id . ', new url: ' . $newsitevalues->url
-                    . ', old url: ' . $sitewithsamesecret->url);
+            // add_to_log(SITEID, 'local_hub', 'site moved', '',
+            //         'id:' . $sitewithsamesecret->id . ', new url: ' . $newsitevalues->url
+            //         . ', old url: ' . $sitewithsamesecret->url);
 
             //redirect to the Moodle site confirming the registration.
             redirect(new moodle_url($url."/admin/registration/confirmregistration.php",
@@ -363,7 +363,7 @@ function process_registration ($sitevalues, $secretexists, $urlexists, $sitewith
         if (!$secretexists and !$urlexists) {
             $newtoken = $hub->register_site($sitevalues);
             //log the new site
-            add_to_log(SITEID, 'local_hub', 'new site registration', '', $sitevalues->url);
+            // add_to_log(SITEID, 'local_hub', 'new site registration', '', $sitevalues->url);
         } else if ($secretexists and $urlexists and
                 ($sitewithsamesecret->url == $sitewithsameurl->url)) {
             //the site is already registered
@@ -372,10 +372,10 @@ function process_registration ($sitevalues, $secretexists, $urlexists, $sitewith
             $newtoken = $hub->register_site($sitevalues, $sitevalues->url);
 
             //log the overwritting site registration
-            add_to_log(SITEID, 'local_hub', 'site registered a new time', '', $sitevalues->url);
+            // add_to_log(SITEID, 'local_hub', 'site registered a new time', '', $sitevalues->url);
         } else {
             //log the code logic error (it should never happen)
-            add_to_log(SITEID, 'local_hub', 'registration code logic error', '', $sitevalues->url);
+            // add_to_log(SITEID, 'local_hub', 'registration code logic error', '', $sitevalues->url);
             throw new moodle_exception('codelogicerror', 'local_hub');
         }
 
