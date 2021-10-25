@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -25,18 +24,18 @@
 
 define('HUB_COURSE_PER_PAGE', 10);
 
-//NEVER change this value after installation, otherwise you will need to change all rating in the DB
+// NEVER change this value after installation, otherwise you will need to change all rating in the DB.
 define('HUB_COURSE_RATING_SCALE', 10);
 
 /**
  * Maximum number of course per web service request
  */
-define('HUB_MAXWSCOURSESRESULT', 25);
+define('HUB_MAXWSCOURSESRESULT', 250);
 
 /**
  * Maximum number of course per day default
  */
-define('HUB_MAXCOURSESPERSITEPERDAY', 20);
+define('HUB_MAXCOURSESPERSITEPERDAY', 200);
 
 
 //// HUB IMAGE SIZE
