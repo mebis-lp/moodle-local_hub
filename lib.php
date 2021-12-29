@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use function PHPUnit\Framework\throwException;
+
 define('HUB_COURSE_PER_PAGE', 10);
 
 // NEVER change this value after installation, otherwise you will need to change all rating in the DB.
@@ -1022,7 +1024,7 @@ class local_hub {
      * @param string $siteurl
      * @return int course id
      */
-    public function register_course($course, $siteurl) {
+    public function register_course($siteid, $course, $siteurl) {
         global $CFG;
 
         //$siteinfo must be an object
@@ -1064,7 +1066,6 @@ class local_hub {
             //delete previous course content
             $this->delete_course_contents($courseid);
         } else {
-            // fwrite($fo, "\n1: " . json_encode($course));
 
             $courseid = $this->add_course($course);
             // add_to_log(SITEID, 'local_hub', 'course registration', '', $courseid);
@@ -1077,13 +1078,12 @@ class local_hub {
         }
         $this->update_course_outcomes($courseid, $course->outcomes);
 
-
-        //update course tag
-        $tags = array();
-        if (!empty($course->coverage)) {
-            $tags = explode(',', $course->coverage);
-        }
         // +++ MBS-HACK (Peter Mayer)
+        //update course tag
+        // $tags = array();
+        // if (!empty($course->coverage)) {
+        //     $tags = explode(',', $course->coverage);
+        // }
         // require_once($CFG->dirroot . '/tag/lib.php');
         // tag_set('hub_course_directory', $courseid, $tags);
         // $cctx = context_course::instance_by_id($courseid);
@@ -1097,19 +1097,17 @@ class local_hub {
             }
         }
 
-        //delete all screenshots if required
+        // Delete all screenshots if required
         if (!empty($course->deletescreenshots)) {
 
-            $level1 = floor($courseid / 1000) * 1000;
-
-            $userdir = "hub/$level1/$courseid";
+            $userdir = "hub/$siteid/$courseid";
 
             $directory = make_upload_directory($userdir);
 
             for ($screenshotnumber = 1; $screenshotnumber <= MAXSCREENSHOTSNUMBER; $screenshotnumber = $screenshotnumber + 1) {
 
                 //delete all existing screenshot
-                if ($this->screenshot_exists($courseid, $screenshotnumber)) {
+                if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
                     unlink($directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
                 }
             }
@@ -1530,15 +1528,11 @@ class local_hub {
      * @param array $file - $file['tmp_name'] should be the filename
      * @param integer $courseid
      */
-    public function add_screenshot($file, $courseid, $screenshotnumber) {
+    public function add_screenshot($file, $siteid, $courseid, $screenshotnumber) {
 
-        // Generate a two-level path for the userid. First level groups them by slices of 1000 users,
-        // second level is userid
-        $level1 = floor($courseid / 1000) * 1000;
+        $dir = "hub/$siteid/$courseid";
 
-        $userdir = "hub/$level1/$courseid";
-
-        $directory = make_upload_directory($userdir);
+        $directory = make_upload_directory($dir);
 
         //get the extension of this image in order to check that it is an image
         $imageext = image_type_to_extension(exif_imagetype($file['tmp_name']));
@@ -1546,7 +1540,7 @@ class local_hub {
         if (!empty($imageext) and $screenshotnumber < MAXSCREENSHOTSNUMBER) {
 
             //delete previously existing screenshot
-            if ($this->screenshot_exists($courseid, $screenshotnumber)) {
+            if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
                 unlink($directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
             }
 
@@ -1560,10 +1554,9 @@ class local_hub {
      * @param int $courseid
      * @param int $screenshotnumber
      */
-    public function delete_screenshot($courseid, $screenshotnumber) {
+    public function delete_screenshot($siteid, $courseid, $screenshotnumber) {
         global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
-        $directory = "hub/$level1/$courseid";
+        $directory = "hub/$siteid/$courseid";
         $filepath = $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber;
         unlink($filepath);
     }
@@ -1575,11 +1568,10 @@ class local_hub {
      * @param int $screenshotnumber
      * @return bool
      */
-    public function screenshot_exists($courseid, $screenshotnumber) {
+    public function screenshot_exists($siteid, $courseid, $screenshotnumber) {
         global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
 
-        $directory = "hub/$level1/$courseid";
+        $directory = "hub/$siteid/$courseid";
         return file_exists($CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
     }
 
@@ -1590,14 +1582,13 @@ class local_hub {
      * @param int $courseid
      * @return $newscreenshotnumber int the new screenshot total
      */
-    public function sanitize_screenshots($courseid) {
+    public function sanitize_screenshots($siteid, $courseid) {
         global $CFG, $DB;
-        $level1 = floor($courseid / 1000) * 1000;
-        $directory = "hub/$level1/$courseid";
+        $directory = "hub/$siteid/$courseid";
 
         $existingscreenshots = array();
         for ($screenshotnumber = 1; $screenshotnumber <= MAXSCREENSHOTSNUMBER; $screenshotnumber++) {
-            if ($this->screenshot_exists($courseid, $screenshotnumber)) {
+            if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
                 $existingscreenshots[] = $screenshotnumber;
             }
         }
@@ -1633,19 +1624,19 @@ class local_hub {
      * TODO: this is temporary till the way to send file by ws is defined
      * Add a backup to a course
      * @param array $file
+     * @param integer $siteid
      * @param integer $courseid
      */
-    public function add_backup($file, $courseid) {
+    public function add_backup($file, $siteid, $courseid) {
+        $fo = fopen(__DIR__ . "/log.txt", "a+");
+        fwrite($fo, "\nBackup file schreiben start!");
 
-        // Generate a two-level path for the userid. First level groups them by slices of 1000 users,
-        //  second level is userid
-        $level1 = floor($courseid / 1000) * 1000;
-
-        $userdir = "hub/$level1/$courseid";
+        $userdir = "hub/$siteid/$courseid";
 
         $directory = make_upload_directory($userdir);
 
         move_uploaded_file($file['tmp_name'], $directory . '/backup_' . $courseid . ".mbz");
+        fwrite($fo, "\nBackup file geschrieben => " . $directory);
     }
 
     /**
@@ -1653,12 +1644,11 @@ class local_hub {
      * Check a backup exists
      * @param int $courseid
      */
-    public function backup_exits($courseid) {
+    public function backup_exits($siteid, $courseid) {
         global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
 
-        $directory = "hub/$level1/$courseid";
-        return file_exists($CFG->dataroot . '/' . $directory . '/backup_' . $courseid . ".mbz");
+        $directory = "hub/$siteid/$courseid";
+        return file_exists($CFG->dataroot . '/' . $directory . '/backup_' . $siteid . '_' . $courseid . ".mbz");
     }
 
     /**
@@ -1667,11 +1657,10 @@ class local_hub {
      * @param int $courseid
      * @return int
      */
-    public function get_backup_size($courseid) {
+    public function get_backup_size($siteid, $courseid) {
         global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
-        $directory = "hub/$level1/$courseid";
-        return filesize($CFG->dataroot . '/' . $directory . '/backup_' . $courseid . ".mbz");
+        $directory = "hub/$siteid/$courseid";
+        return filesize($CFG->dataroot . '/' . $directory . '/backup_' . $siteid . '_' . $courseid . ".mbz");
     }
 
     /**

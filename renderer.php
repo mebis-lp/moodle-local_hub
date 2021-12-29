@@ -491,9 +491,11 @@ class local_hub_renderer extends plugin_renderer_base {
                                 array('class' => 'hubcourseuserinfo'));
 
                 //create course content related information html
-                $course->subject = get_string($course->subject, 'edufields');
+
+                // MBS-TODO $course->subject ist kommaseparierte Liste von Fächer-IDs. => Umschreiben in Klartext.
+                $course->subject = $course->subject; //get_string($course->subject, 'edufields');
                 $course->audience = get_string('audience' . $course->audience, 'hub');
-                $course->educationallevel = get_string('edulevel' . $course->educationallevel, 'hub');
+                // $course->educationallevel = get_string('edulevel' . $course->educationallevel, 'hub');
                 $coursecontentinfo = '';
                 if (empty($course->coverage)) {
                     $course->coverage = '';

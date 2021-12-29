@@ -99,10 +99,7 @@ class hub_settings_form extends \moodleform {
             $hubmaxwscourseresult = HUB_MAXWSCOURSESRESULT;
         }
 
-        // Enable rss feed.
-        $enablerssfeeds = get_config('local_hub', 'enablerssfeeds');
-
-        //password (default) value
+        // Password (default) value.
         if (!empty(get_config('local_hub', 'password'))) {
             $password = get_config('local_hub', 'password');
         } else {

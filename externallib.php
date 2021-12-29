@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
 /**
  * External hub directory API
  *
@@ -24,7 +26,7 @@
  */
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/local/hub/lib.php");
-
+require_once($CFG->dirroot . "/local/hub/classes/local/teachshare_helper.php");
 class local_hub_external extends external_api {
 
     /**
@@ -307,29 +309,30 @@ class local_hub_external extends external_api {
      */
     public static function register_courses_parameters() {
         return new external_function_parameters(
-                array(
+                [
                     'courses' => new external_multiple_structure(
                             new external_single_structure(
-                                    array(
+                                    [
                                         'sitecourseid' => new external_value(PARAM_INT, 'the id of the course on the publishing site'),
                                         'fullname' => new external_value(PARAM_TEXT, 'course name'),
                                         'shortname' => new external_value(PARAM_TEXT, 'course short name'),
                                         'description' => new external_value(PARAM_TEXT, 'course description'),
-                                        'language' => new external_value(PARAM_ALPHANUMEXT, 'course language'),
+                                        'language' => new external_value(PARAM_ALPHANUMEXT, 'course language', VALUE_DEFAULT, 'de'),
                                         'publishername' => new external_value(PARAM_TEXT, 'publisher name'),
                                         'publisheremail' => new external_value(PARAM_EMAIL, 'publisher email'),
                                         'contributornames' => new external_value(PARAM_TEXT, 'contributor names'),
-                                        'coverage' => new external_value(PARAM_TEXT, 'coverage'),
+                                        'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
                                         'creatorname' => new external_value(PARAM_TEXT, 'creator name'),
-                                        'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name'),
+                                        'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
                                         'subject' => new external_value(PARAM_ALPHANUM, 'subject'),
                                         'audience' => new external_value(PARAM_ALPHA, 'audience'),
-                                        'educationallevel' => new external_value(PARAM_ALPHA, 'educational level'),
+                                        'educationallevel' => new external_value(PARAM_ALPHA, 'educational level', VALUE_OPTIONAL),
                                         'creatornotes' => new external_value(PARAM_RAW, 'creator notes'),
                                         'creatornotesformat' => new external_value(PARAM_INT, 'notes format'),
                                         'demourl' => new external_value(PARAM_URL, 'demo URL', VALUE_OPTIONAL),
                                         'courseurl' => new external_value(PARAM_URL, 'course URL', VALUE_OPTIONAL),
                                         'enrollable' => new external_value(PARAM_BOOL, 'is the course enrollable', VALUE_DEFAULT, 0),
+                                        'share' => new external_value(PARAM_BOOL, 'is the course downloadable', VALUE_DEFAULT, 1),
                                         'screenshots' => new external_value(PARAM_INT, 'the number of screenhots', VALUE_OPTIONAL),
                                         'deletescreenshots' => new external_value(PARAM_INT, 'ask to delete all the existing screenshot files (it does not reset the screenshot number)', VALUE_DEFAULT, 0),
                                         'contents' => new external_multiple_structure(new external_single_structure(
@@ -341,11 +344,23 @@ class local_hub_external extends external_api {
                                         'outcomes' => new external_multiple_structure(new external_single_structure(
                                                         array(
                                                             'fullname' => new external_value(PARAM_TEXT, 'the outcome fullname')
-                                                )), 'outcomes', VALUE_OPTIONAL)
-                                    )
+                                                )), 'outcomes', VALUE_OPTIONAL),
+                                        // MBS Additional Parameters for teachSHARE.
+                                        'schooltype' => new external_value(PARAM_TEXT, 'JSON of all selected schooltypes'),
+                                        'schoolyear' => new external_value(PARAM_TEXT, 'JSON of all selected schoolyears', VALUE_OPTIONAL),
+                                        'withanon' => new external_value(PARAM_BOOL, 'Boolean if there are userdata included'),
+                                        'tags' => new external_value(PARAM_TEXT, 'CSV of all tags of the course'),
+                                        'license' => new external_value(PARAM_TEXT, 'Shorthand of the license'),
+                                        'legalinfo_foreignstuff' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                        'legalinfo_foreinstuffchanged' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                        'legalinfo_ownstuff' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                        'legalinfo_audioandimages' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                        'legalinfo_privatedata' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                        'legalinfo_termsofuse' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                    ]
                             )
                     )
-                )
+                ]
         );
     }
 
@@ -354,20 +369,24 @@ class local_hub_external extends external_api {
      * @return array ids of created courses
      */
     public static function register_courses($courses) {
+        $fo = fopen(__DIR__ . "/log.txt", "a+");
+        fwrite($fo, "\n".json_encode($courses));
 
         global $DB;
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
         self::validate_context($context);
         require_capability('local/hub:registercourse', $context);
-
-        $params = self::validate_parameters(self::register_courses_parameters(),
-                        array('courses' => $courses));
+        $params = self::validate_parameters(
+            self::register_courses_parameters(),
+            ['courses' => $courses]
+        );
 
         $hub = new local_hub();
 
-        //retieve site url
+        // Retrieve site url.
         $token = optional_param('wstoken', '', PARAM_ALPHANUM);
+        fwrite($fo, "\nToken: " . $token);
 
         $siteurl = $hub->get_communication(WSSERVER, REGISTEREDSITE, null, $token)->remoteurl;
         $site = $hub->get_site_by_url($siteurl);
@@ -377,7 +396,7 @@ class local_hub_external extends external_api {
             //site setting (overwrite the hub setting value)
             $maxpublication = $site->publicationmax;
         } else { //hub setting
-            $maxpublication = 2000; // get_config('local_hub', 'maxcoursesperday');
+            $maxpublication = get_config('local_hub', 'maxcoursesperday');
         }
         if ($maxpublication !== false) {
 
@@ -414,12 +433,38 @@ class local_hub_external extends external_api {
             }
         }
 
+        fwrite($fo, "\nPOS1");
 
         $transaction = $DB->start_delegated_transaction();
 
-        $courseids = array();
+        $courseids = [];
         foreach ($params['courses'] as $course) {
-            $courseids[] = $hub->register_course($course, $siteurl); //'true' indicates registration update mode
+            fwrite($fo, "\nPOS2");
+            $courseid = $hub->register_course($site->id, $course, $siteurl); //'true' indicates registration update mode
+            $courseids[] = $courseid;
+            fwrite($fo, "\nPOS3");
+
+            // // Pipe the coursebackupy to the teachSHARE Workflow.
+            // $coursedata = new stdClass();
+            // $templatemeta = new stdClass();
+
+            // // fwrite($fo, "\nCourseObj." . json_encode($course));die;
+            // // Create template on maininstance, reverse insert templatedata.
+            // $coursedata->course = $course->sitecourseid;
+            // $coursedata->withanon = $course->withanon;
+            // // $userdatacmids = $templateorig->userdatacmids;
+            // // $excludedeploydatacmids = $templateorig->excludedeploydatacmids;
+            // // Get new userid.
+            // $templatemeta->authorname = $course->publishername;
+            // $templatemeta->authorid = 1; // todo get user by fullname
+            // $templatemeta->licenseshortname = $course->license;
+
+            // $userdir = "hub/{$site->id}/$courseid";
+            // $directory = make_upload_directory($userdir);
+            // $backupfilepath = $directory . '/backup_' . $courseid . ".mbz";
+            // fwrite($fo, "\nPOS4");
+
+            // \local_hub\local\teachshare_helper::initialize_workflow($coursedata, $templatemeta, [], [], $backupfilepath, 'test.mbz');
         }
 
         $transaction->allow_commit();

@@ -1,0 +1,24 @@
+{"wstoken":"58e174baca1800b25445f83c0caf38c7"}
+[{"sitecourseid":72,"fullname":"Test Testname","shortname":"Kurs 2","description":"Das ist eine Testkursbeschreibung","language":"de","publishername":"Admin User","publisheremail":"peter.mayer@fit4exam.de","contributornames":"","creatorname":"Admin User","subject":"4","audience":"students","creatornotes":"","creatornotesformat":1,"enrollable":false,"share":true,"screenshots":0,"deletescreenshots":0,"schooltype":"{\"138\":\"1\"}","schoolyear":"{\"150\":\"1\"}","withanon":false,"tags":"","license":"cc4","legalinfo_foreignstuff":true,"legalinfo_foreinstuffchanged":true,"legalinfo_ownstuff":true,"legalinfo_audioandimages":true,"legalinfo_privatedata":true,"legalinfo_termsofuse":true}]
+Token: 58e174baca1800b25445f83c0caf38c7
+POS1
+POS2
+POS3
+Upload.php beginning
+["58e174baca1800b25445f83c0caf38c7","backup",1,"28"]
+File{"name":"sicherung-moodle2-course-72-kurs_2-20211109-1428-nu.mbz","type":"application\/vnd.moodle.backup","tmp_name":"\/tmp\/phpnTdzbx","error":0,"size":6747}
+Course: {"id":"28","siteid":"1","sitecourseid":"72","contributornames":"","coverage":null,"creatorname":"Admin User","timemodified":"1636464520","description":"Das ist eine Testkursbeschreibung","format":"mbz","shortname":"Kurs 2","language":"de","publishername":"Admin User","licenceshortname":null,"courseurl":"","subject":"4","fullname":"Test Testname","audience":"students","educationallevel":"","coursemapid":null,"creatornotes":"","creatornotesformat":"1","privacy":"1","downloadurl":null,"originaldownloadurl":null,"demourl":null,"enrollable":"0","enrolcost":null,"enrolcostcurrency":null,"downloadcost":null,"downloadcostcurrency":null,"publisheremail":"peter.mayer@fit4exam.de","deleted":"0","screenshots":"0","timepublished":"1636464520"}Filetype: backup
+Check Backup exists: false
+Backup file schreiben start!
+Backup file geschrieben => /var/www/moodledata/hub/1/28
+Upload.php beginning
+["58e174baca1800b25445f83c0caf38c7","backup",1,"28"]
+File{"name":"sicherung-moodle2-course-72-kurs_2-20211109-1430-nu.mbz","type":"application\/vnd.moodle.backup","tmp_name":"\/tmp\/phpeie1bM","error":0,"size":6745}
+Course: {"id":"28","siteid":"1","sitecourseid":"72","contributornames":"","coverage":null,"creatorname":"Admin User","timemodified":"1636464520","description":"Das ist eine Testkursbeschreibung","format":"mbz","shortname":"Kurs 2","language":"de","publishername":"Admin User","licenceshortname":null,"courseurl":"","subject":"4","fullname":"Test Testname","audience":"students","educationallevel":"","coursemapid":null,"creatornotes":"","creatornotesformat":"1","privacy":"1","downloadurl":null,"originaldownloadurl":null,"demourl":null,"enrollable":"0","enrolcost":null,"enrolcostcurrency":null,"downloadcost":null,"downloadcostcurrency":null,"publisheremail":"peter.mayer@fit4exam.de","deleted":"0","screenshots":"0","timepublished":"1636464520"}Filetype: backup
+Check Backup exists: false
+Backup file schreiben start!
+Backup file geschrieben => /var/www/moodledata/hub/1/28
+Upload.php beginning
+["58e174baca1800b25445f83c0caf38c7","backup",1,"28"]
+File{"name":"sicherung-moodle2-course-72-kurs_2-20211109-1456-nu.mbz","type":"application\/vnd.moodle.backup","tmp_name":"\/tmp\/phpbyNWVe","error":0,"size":6751}
+Course: false

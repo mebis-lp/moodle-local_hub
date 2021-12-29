@@ -34,38 +34,59 @@ $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the scre
 $imagewidth = optional_param('imagewidth', HUBLOGOIMAGEWIDTH, PARAM_ALPHANUM); //the screenshot width, can be set to 'original' to forcce original size
 $imageheight = optional_param('imageheight', HUBLOGOIMAGEHEIGHT, PARAM_INT); //the screenshot height
 
+// $fo = fopen(__DIR__ . "/../log.txt", "a+");
+// fwrite($fo, "\nUpload.php beginning");
+
 if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenabled')) {
+    // fwrite($fo, "\nUpload.php Step 1");
 
     switch ($filetype) {
 
         case HUB_BACKUP_FILE_TYPE:
+            // fwrite($fo, "\nBackup");
+
             // Check that the file is downloadable / set as visible
-            $course = $DB->get_record('hub_course_directory', array('id' => $courseid));
-            if (!empty($course) &&
-                    ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
+            $course = $DB->get_record('hub_course_directory', ['id' => $courseid]);
+            if (!empty($course) && ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
+                // fwrite($fo, "\nFile is downloadable");
 
                 // If the hub is set as PRIVATE, allow the download
                 // either if the download is requested by a logged in user,
                 // either if the download is requested by a site (server side request).
                 $hubprivacy = get_config('local_hub', 'privacy');
+                // fwrite($fo, "\nPrivacy: " . $hubprivacy);
+
                 $token = optional_param('token', '', PARAM_ALPHANUM);
-                if (!empty($token)) {
-                    // Check the communication token.
-                    $hub = new local_hub();
-                    $communication = $hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token);
-                }
-                if ($hubprivacy != HUBPRIVATE or isloggedin() or !empty($communication)) {
-                    $level1 = floor($courseid / 1000) * 1000;
-                    $userdir = "hub/$level1/$courseid";
+                // fwrite($fo, "\nToken: " . $token);
+                // fwrite($fo, "\ncommunication: " . json_encode($hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token)));
+                // if (!empty($token)) {
+                //     // Check the communication token.
+                //     $hub = new local_hub();
+                //     $communication = $hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token);
+                // }
+                if ($hubprivacy != HUBPRIVATE ) { //or isloggedin() or !empty($communication)) {
+                    $userdir = "hub/" . $course->siteid . "/$courseid";
+                    // fwrite($fo, "\nDIR: " . $userdir);
                     $remotemoodleurl = optional_param('remotemoodleurl', '', PARAM_URL);
                     if (!empty($remotemoodleurl)) {
                         $remotemoodleurl = ',' . $remotemoodleurl . ',' . getremoteaddr();
                     } else {
                         $remotemoodleurl = ',' . 'unknown' . ',' . getremoteaddr();
                     }
+                    // fwrite($fo, "\nRemoteURL: " . $remotemoodleurl);
+                    // fwrite($fo, "\nFileLink: " . $CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz");
+                    // fwrite($fo, "\nFile Exists: " . json_encode(file_exists($CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz")));
                     // add_to_log(SITEID, 'local_hub', 'download backup', '', $courseid . $remotemoodleurl);
-                    send_file($CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz", $course->shortname . ".mbz",
-                            'default', 0, false, true, '', false);
+                    send_file(
+                        $CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz",
+                        $course->shortname . ".mbz",
+                        'default',
+                        0,
+                        false,
+                        true,
+                        '',
+                        false
+                    );
                 }
             }
             break;
@@ -76,8 +97,7 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
             if (!empty($course) &&
                     ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
 
-                $level1 = floor($courseid / 1000) * 1000;
-                $userdir = "hub/$level1/$courseid";
+                $userdir = "hub/" . $course->siteid . "/$courseid";
                 $filepath = $CFG->dataroot . '/' . $userdir . '/screenshot_' . $courseid . "_" . $screenshotnumber;
                 $imageinfo = getimagesize($filepath, $info);
 
