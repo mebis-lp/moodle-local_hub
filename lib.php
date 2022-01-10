@@ -2215,14 +2215,14 @@ function update_sendy_list_batch($sites, $chunksize=150) {
     // Loop through $subscribers.
     // For each subscriber, check their subscription status.
     // If the email address is not known to the list server, subscribe them.
-    debugging('Subscribing '. count($subscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
+    // debugging('Subscribing '. count($subscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
     $chunks = array_chunk($subscribers, $chunksize);
     $resturl = '/subscribe';
     process_sendy_chunks($chunks, $sendyurl, $resturl, $sendylistid, $sendyapikey, array('1', 'true', 'Already subscribed.'));
 
     // Loop through $unsubscribers and unsubscribe them.
     // The state on list server doesn't matter, just unsubscribe.
-    debugging('Unsubscribing '. count($unsubscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
+    // debugging('Unsubscribing '. count($unsubscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
     $chunks = array_chunk($unsubscribers, $chunksize);
     $resturl = '/unsubscribe';
     process_sendy_chunks($chunks, $sendyurl, $resturl, $sendylistid, $sendyapikey, array('1', 'true'));
