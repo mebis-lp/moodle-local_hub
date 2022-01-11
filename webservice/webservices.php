@@ -28,7 +28,7 @@ define('NO_DEBUG_DISPLAY', true);
 define('NO_MOODLE_COOKIES', true);
 
 $fo = fopen(__DIR__ . "/../log.txt", 'a+');
-fwrite($fo, json_encode($_GET));
+fwrite($fo, "\nWebservice => " . json_encode($_GET));
 require('../../../config.php');
 require_once($CFG->dirroot."/local/hub/webservice/locallib.php");
 

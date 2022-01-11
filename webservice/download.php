@@ -34,8 +34,9 @@ $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the scre
 $imagewidth = optional_param('imagewidth', HUBLOGOIMAGEWIDTH, PARAM_ALPHANUM); //the screenshot width, can be set to 'original' to forcce original size
 $imageheight = optional_param('imageheight', HUBLOGOIMAGEHEIGHT, PARAM_INT); //the screenshot height
 
-// $fo = fopen(__DIR__ . "/../log.txt", "a+");
-// fwrite($fo, "\nUpload.php beginning");
+$fo = fopen(__DIR__ . "/../log.txt", "a+");
+fwrite($fo, "\nDownload.php beginning");
+fwrite($fo, "\n" . json_encode($courseid));
 
 if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenabled')) {
     // fwrite($fo, "\nUpload.php Step 1");

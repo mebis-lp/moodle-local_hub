@@ -38,8 +38,10 @@ class teachshare_helper {
      * Sample request: curl http://localhost/mbsmoodle/webservice/rest/server.php?wstoken=444cb15d64671fcc6ca1972893157196 -d "wsfunction=block_mbsteachshare_receive_template"
      * @return array list of oer course templates
      */
-    public static function initialize_workflow($coursedata, $templatemeta, $userdatacmids, $excludedeploydatacmids, $backupfile, $filename) {
+    public static function initialize_workflow($coursedata, $backupfilepath) {
         global $CFG;
+
+        $filename = basename($backupfilepath);
 
         $fo = fopen(__DIR__ . "/log.txt", "a+");
         fwrite($fo, "\ntsPOS1");
@@ -51,10 +53,10 @@ class teachshare_helper {
         }
 
         // Write backupfile.
-        $target = $CFG->dataroot . '/' . \block_mbsteachshare\backup::BACKUP_LOCALPATH . '/backup/ ' . $filename;
-        if (!file_put_contents($target, $backupfile)) {
-            return false;
-        }
+        // $target = $CFG->dataroot . '/' . \block_mbsteachshare\backup::BACKUP_LOCALPATH . '/backup/ ' . $filename;
+        // if (!file_put_contents($target, $backupfile)) {
+        //     return false;
+        // }
 
         // Request a primary deployment.
         template::set_status($templatemeta, template::STATUS_REQUESTED);

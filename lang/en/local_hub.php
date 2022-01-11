@@ -509,3 +509,4 @@ $string['top10sitesbycourses'] = 'Top 10 sites by courses';
 $string['top10countriesbyregistration'] = 'Top 10 countries by registrations';
 $string['versionsused'] = 'Versions used';
 
+$string['errorrestore_archive_not_found'] = 'Archive (mbz) not found.';

@@ -1022,7 +1022,7 @@ class local_hub {
      * Register a course for a specific site
      * @param object $course
      * @param string $siteurl
-     * @return int course id
+     * @return int courseregid: id in hub_course_directory
      */
     public function register_course($siteid, $course, $siteurl) {
         global $CFG;
@@ -1067,8 +1067,8 @@ class local_hub {
             $this->delete_course_contents($courseid);
         } else {
 
-            $courseid = $this->add_course($course);
-            // add_to_log(SITEID, 'local_hub', 'course registration', '', $courseid);
+            $courseregid = $this->add_course($course);
+            // add_to_log(SITEID, 'local_hub', 'course registration', '', $courseregid);
         }
 
         //update outcomes
@@ -1076,7 +1076,7 @@ class local_hub {
         if (!isset($course->outcomes)) {
             $course->outcomes = null;
         }
-        $this->update_course_outcomes($courseid, $course->outcomes);
+        $this->update_course_outcomes($courseregid, $course->outcomes);
 
         // +++ MBS-HACK (Peter Mayer)
         //update course tag
@@ -1092,7 +1092,7 @@ class local_hub {
         //add new course contents
         if (!empty($course->contents)) {
             foreach ($course->contents as $content) {
-                $content['courseid'] = $courseid;
+                $content['courseid'] = $courseregid;
                 $this->add_course_content($content);
             }
         }
@@ -1114,7 +1114,7 @@ class local_hub {
         }
         // $fo = fopen(__DIR__ . "/log.txt", "w+");
         // fwrite($fo, "\n" . json_encode($courseid));
-        return $courseid;
+        return $courseregid;
     }
 
     /**
