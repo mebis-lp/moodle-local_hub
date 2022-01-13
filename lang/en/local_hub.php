@@ -510,3 +510,8 @@ $string['top10countriesbyregistration'] = 'Top 10 countries by registrations';
 $string['versionsused'] = 'Versions used';
 
 $string['errorrestore_archive_not_found'] = 'Archive (mbz) not found.';
+$string['error_no_siteadmins_defined'] = 'There is no siteadmin defined in config.php. Please define a siteadmin user $CFG->siteadmin = <id>,<id>,...';
+$string['error_restoring_backupfile'] = 'Error when restoring the backup file: {$a}';
+$string['error_restored_course_not_found'] = 'The restored course could not be found.';
+$string['eventname_backup_uploaded'] = 'A new backupfile was uploaded to this hub.';
+$string['eventname_restore_error_occured'] = 'A backup restore error occured: Step {$a}';

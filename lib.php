@@ -460,8 +460,7 @@ class local_hub {
             $wheresql .= " privacy = :visibility";
             $sqlparams['visibility'] = $privacy;
         }
-        // $fo = fopen(__DIR__ . "/log.txt", "a+");
-        // fwrite($fo, json_encode($options)."\n\n");
+
         // if ($options['downloadable']) {
         //     if (!empty($wheresql)) {
         //         $wheresql .= " AND";
@@ -495,6 +494,7 @@ class local_hub {
             // }
             // $idlist .= ')';
             $wheresql .= " c.id IN " . $idlist;
+            $wheresqlcnt = " id IN " . $idlist;
         }
 
         if (!empty($options['sitecourseids'])) {
@@ -584,8 +584,6 @@ class local_hub {
 
             $sql = 'SELECT c.* ' . $extracolumns . 'FROM {hub_course_directory} c ' . $joinsql . ' WHERE '
                     . $wheresql . $ordersql;
-            // fwrite($fo, $sql);
-            // fwrite($fo, "\n\n" . json_encode($sqlparams));
 
             $courses = $DB->get_records_sql($sql, $sqlparams, $limitfrom, $limitnum);
         }
@@ -1112,8 +1110,6 @@ class local_hub {
                 }
             }
         }
-        // $fo = fopen(__DIR__ . "/log.txt", "w+");
-        // fwrite($fo, "\n" . json_encode($courseid));
         return $courseregid;
     }
 
@@ -1628,15 +1624,12 @@ class local_hub {
      * @param integer $courseid
      */
     public function add_backup($file, $siteid, $courseid) {
-        $fo = fopen(__DIR__ . "/log.txt", "a+");
-        fwrite($fo, "\nBackup file schreiben start!");
-
+ 
         $userdir = "hub/$siteid/$courseid";
 
         $directory = make_upload_directory($userdir);
 
         move_uploaded_file($file['tmp_name'], $directory . '/backup_' . $courseid . ".mbz");
-        fwrite($fo, "\nBackup file geschrieben => " . $directory);
     }
 
     /**
@@ -1648,7 +1641,7 @@ class local_hub {
         global $CFG;
 
         $directory = "hub/$siteid/$courseid";
-        return file_exists($CFG->dataroot . '/' . $directory . '/backup_' . $siteid . '_' . $courseid . ".mbz");
+        return file_exists($CFG->dataroot . '/' . $directory . '/backup_' . $courseid . ".mbz");
     }
 
     /**
@@ -1660,7 +1653,7 @@ class local_hub {
     public function get_backup_size($siteid, $courseid) {
         global $CFG;
         $directory = "hub/$siteid/$courseid";
-        return filesize($CFG->dataroot . '/' . $directory . '/backup_' . $siteid . '_' . $courseid . ".mbz");
+        return filesize($CFG->dataroot . '/' . $directory . '/backup0_' . $courseid . ".mbz");
     }
 
     /**

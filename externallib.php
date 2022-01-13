@@ -26,11 +26,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 require_once($CFG->libdir . "/externallib.php");
 require_once($CFG->dirroot . "/local/hub/lib.php");
-require_once($CFG->dirroot . "/local/hub/classes/local/teachshare_helper.php");
+require_once($CFG->dirroot . "/local/hub/classes/local/local_hub_helper.php");
 class local_hub_external extends external_api {
-
-
-    const HUB_COURSECATEGORY_DEMO_NAME = "Hub Course Demo";
 
     /**
      * Returns description of method parameters
@@ -372,12 +369,8 @@ class local_hub_external extends external_api {
      * @return array ids of created courses
      */
     public static function register_courses($courses) {
-        global $CFG;
+        global $CFG, $DB;
 
-        $fo = fopen(__DIR__ . "/log.txt", "a+");
-        // fwrite($fo, "\n".json_encode($courses));
-
-        global $DB;
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
         self::validate_context($context);
@@ -391,7 +384,6 @@ class local_hub_external extends external_api {
 
         // Retrieve site url.
         $token = optional_param('wstoken', '', PARAM_ALPHANUM);
-        // fwrite($fo, "\nToken: " . $token);
 
         $siteurl = $hub->get_communication(WSSERVER, REGISTEREDSITE, null, $token)->remoteurl;
         $site = $hub->get_site_by_url($siteurl);
@@ -438,10 +430,6 @@ class local_hub_external extends external_api {
             }
         }
 
-        // fwrite($fo, "\nPOS1");
-
-        // $transaction = $DB->start_delegated_transaction();
-
         $courseids = [];
         foreach ($params['courses'] as $course) {
 
@@ -449,306 +437,12 @@ class local_hub_external extends external_api {
                 $course = (object) $course;
             }
 
-            fwrite($fo, "\n\n".json_encode($course));
+            $courseids[] = $course->sitecourseid;
             $courseregid = $hub->register_course($site->id, $course, $siteurl); //'true' indicates registration update mode
             $courseregids[] = $courseregid;
 
-            $uploaddir = "hub/" . $course->siteid . "/" . $course->sitecourseid;
-            $backupfilepath = $CFG->dataroot . '/' . $uploaddir . '/backup_' . $course->sitecourseid . ".mbz";
-
-            // Create the temp/backup directory if necessary.
-            $backuptmpdir = $CFG->tempdir . DIRECTORY_SEPARATOR . 'backup/hub';
-            if (!check_dir_exists($backuptmpdir, true, true)) {
-                throw new \restore_controller_exception('cannot_create_backup_temp_dir');
-            }
-            $tmpname   = 'hubtemplating_' . $courseregid . '_' . time();
-            $backuptmpdir = make_backup_temp_directory($tmpname);
-            
-            if (!is_file($backupfilepath)) {
-                throw new \moodle_exception('errorrestore_archive_not_found', 'local_hub', '', null,$backupfilepath);
-            }
-
-            // Copy and extract backup file to temp dir in order to be restored.
-            $fp        = get_file_packer('application/vnd.moodle.backup');
-            $extracted = $fp->extract_to_pathname($backupfilepath, $backuptmpdir);
-            $moodlefile = $backuptmpdir . '/' . 'moodle_backup.xml';
-            if (!$extracted || !is_readable($moodlefile)) {
-                throw new \backup_helper_exception('missing_moodle_backup_xml_file', $moodlefile);
-            }
-
-            $coursecat = $DB->get_record('course_categories', ['name' => self::HUB_COURSECATEGORY_DEMO_NAME]);
-
-            if (empty($coursecat)) {
-                require_once($CFG->libdir . '/testing/generator/data_generator.php');
-                $generator = new testing_data_generator();
-                $record = [
-                    'name' => self::HUB_COURSECATEGORY_DEMO_NAME,
-                    'parent' => 0,
-                    'descriptionformat' => 0,
-                    'visible' => 1,
-                    'description' => '',
-                ];
-                $coursecat = $generator->create_category($record);
-            }
-
-            require_once($CFG->dirroot . '/course/lib.php');
-            require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
-            require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-            
-            // Load info.
-            $info = \backup_general_helper::get_backup_information($tmpname);
-            // file_put_contents($backuptmpdir . "/" . basename($backupfilepath), file_get_contents($backupfilepath));
-            // Create course.
-            // Transaction.
-            $transaction = $DB->start_delegated_transaction();
-            $cdata = (object) [
-                'category' => $coursecat->id,
-                'shortname' => "Demo_" . $courseregid . "_" . $course->shortname,
-                'fullname' => $info->original_course_fullname,
-                'visible' => 0,
-                'newsitems' => 0, // Prevent creation of a new forum when course_created event is fired.
-            ];
-            $newcourse = create_course($cdata);
-
-            // Commit.
-            $transaction->allow_commit();
-           
-            // Transaction.
-            $transaction = $DB->start_delegated_transaction();
-            // Restore the backup to make a course viewable.
-
-            // Restore.
-            $admin = self::get_mbstpl_admin();
-
-            // mebis Tafel material copy is necessary. Store this info with courseid and no userid, because its the teachSHARE user.
-            // self::$tafelcopyinfos = [1, $course->id];
-
-            // Setting this value causes mapping of ids in restore_local_mbsteachshare_plugin.
-            // self::$excludedeploydatacmids = self::get_exploded_ids($template->excludedeploydatacmids);
-            // self::$targetnewcourse        = true;
-
-            try {
-                $rc = new \restore_controller(
-                    $tmpname,
-                    $newcourse->id,
-                    backup::INTERACTIVE_NO,
-                    \backup::MODE_SAMESITE,
-                    $admin->id,
-                    \backup::TARGET_NEW_COURSE
-                );
-                $rc->execute_precheck();
-                $rc->execute_plan();
-            } catch (\Exception $e) {
-                // log::add('backup_launch_primary_restorefailed', $template->id, $template->status, get_string('log-launchprimaryrestorefailed', 'block_mbsteachshare'), $template);
-                throw new \moodle_exception('errorrestoringtemplateprimary', 'block_mbsteachshare', '', $e->getMessage());
-            }
-            // self::$excludedeploydatacmids = null;
-            // self::$targetnewcourse        = null;
-            // self::$tafelcopyinfos = null;
-
-
-            // foreach (explode(',', $CFG->siteadmins) as $admin) {
-            //     $admin = (int)$admin;
-            //     break;
-            // }
-            // $user =  $DB->get_record('user',
-            //     ['id' => $admin]
-            // );
-
-            // require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
-
-            // Create new course.
-            // $shortname          = "Demo_" . $courseregid . "_" . $course->shortname;
-            // $folder             = 'hub'; // as found in: $CFG->dataroot . '/temp/backup/' 
-            // $categoryid         = $coursecat->id; // e.g. 1 == Miscellaneous
-            // $userdoingrestore   = $user->id; // e.g. 2 == admin
-            // $newcourseid           = restore_dbops::create_new_course($course->fullname, $shortname, $categoryid);
-
-            // // Restore backup into course.
-            // $controller = new restore_controller(
-            //     $folder,
-            //     $newcourseid,
-            //     backup::INTERACTIVE_NO,
-            //     backup::MODE_GENERAL,
-            //     $userdoingrestore,
-            //     backup::TARGET_NEW_COURSE
-            // );
-
-
-            // fwrite($fo, "\n\n" . json_encode([
-            //     $folder,
-            //     $newcourseid,
-            //     backup::INTERACTIVE_NO,
-            //     backup::MODE_GENERAL,
-            //     (int) $userdoingrestore,
-            //     backup::TARGET_NEW_COURSE
-            // ]));
-
-
-
-            // $controller->execute_precheck();
-            // $controller->execute_plan();
-
-            // Commit.
-            $transaction->allow_commit();
-
-            // $courserecord = $DB->get_record('course', ['id' => $newcourseid]);
-
-            // if(empty($courserecord)) {
-            //     // Throw an exception in the future.
-            // }
-
-            // $url = new moodle_url('/course/view.php',['id' => $newcourseid]);
-            $url = new \moodle_url('/course/view.php', array('id' => $newcourse->id));
-
-            fwrite($fo, "\nURL => ". (string)$url);
-            $DB->set_field('hub_course_directory', 'courseurl', (string) $url, ['id' => $courseregid]);
-
-
-            // Create the file location in the backup temp.
-            // $targetfilename = \restore_controller::get_tempdir_name($backuprecord->courseid, get_admin()->id);
-            // $target = $backuptmpdir . DIRECTORY_SEPARATOR . $targetfilename;
-            // // Create the location of the actual backup file.
-            // $source = get_config('tool_lifecycle', 'backup_path') . DIRECTORY_SEPARATOR . $backuprecord->backupfile;
-            // // Check if the backup file exists.
-            // if (!file_exists($source)) {
-            //     throw new \moodle_exception('errorbackupfiledoesnotexist', 'tool_lifecycle', $source);
-            // }
-
-            // // Copy the file to the backup temp dir.
-            // copy($source, $target);
-
-            // $context = \context_system::instance();
-            // $restoreurl = new \moodle_url(
-            //     '/backup/restore.php',
-            //     array(
-            //         'contextid' => $context->id,
-            //         'filename' => $targetfilename,
-            //     )
-            // );
-            // redirect($restoreurl);
-
-
-
-            // \local_hub\local\teachshare_helper::initialize_workflow($course, $backupfilepath);
-
-            // // fwrite($fo, "\nPOS3");
-
-            // // $uploaddir = "hub/" . $course->siteid . "/$courseid";
-            // // $filepath = $CFG->dataroot . '/' . $uploaddir . '/backup_' . $courseid . ".mbz";
-
-            // $context = \context_system::instance();
-            // $fs = get_file_storage();
-
-            // // Delete existing backupfiles since we need to make sure its the newest version.
-            // $fs->delete_area_files(
-            //     $context->id,
-            //     'block_mbsteachshare',
-            //     \block_mbsteachshare\backup::FILEAREA_PUPBACKUP,
-            //     $site->id * 10000000000 + $courseid
-            // );
-
-            // // Make moodle file.
-            // // $filename = \block_mbsteachshare\backup::PREFIX_PRIMARY . $template->id . '.mbz';
-            // $filename = \block_mbsteachshare\backup::PREFIX_PRIMARY . $site->id . "_" . $courseid . '.mbz';
-            // $cleanfilename = $fs->get_unused_filename(
-            //     $context->id,
-            //     'block_mbsteachshare',
-            //     \block_mbsteachshare\backup::FILEAREA_ORGBACKUP,
-            //     $site->id * 10000000000 + $courseid,
-            //     '/',
-            //     $filename
-            // );
-
-            // $template = new stdClass();
-            // $template->origcourseid = '';
-            // $template->incluserdata = $course->withanon;
-            // $template->userdatacmids = '';
-            // $template->authorid = '';
-            // $template->authorname = '';
-            // // $template->status = '';
-            // $template->courseid = '';
-            // // $template->excludedeploydatacmids = '';
-            // $template->lastresettime = '';
-            // $template->licenseshortname = '';
-            // $template->countcopies = 0;
-            // $template->ratingaverage = 0;
-            // $template->ratingcount = 0;
-            // $template->timecreated = time();
-            // // $template->timemodified = '';
-
-            // launch_primary_restore;
-
-
-
-            // $user = \block_mbsteachshare\backup::get_mbstpl_admin();
-            // $filerecord    = (object) [
-            //     'contextid' => $context->id,
-            //     'component' => 'block_mbsteachshare',
-            //     'filearea'  => \block_mbsteachshare\backup::FILEAREA_ORGBACKUP,
-            //     'itemid'    => $site->id * 10000000000 + $courseid,
-            //     'filepath'  => '/',
-            //     'filename'  => $cleanfilename,
-            //     'userid'    => $user->id,
-            // ];
-            // $fs->create_file_from_pathname($filerecord, $filepath);
-
-            // $template = $DB->get_record('block_mbsteachshare_template', array('courseid' => $courseid), '*', MUST_EXIST);
-
-            // \block_mbsteachshare\local\template::set_status($templatemeta, block_mbsteachshare\local\template::STATUS_REQUESTED);
-
-            // // Delete uploaded file.
-            // // @unlink($filepath);
-
-            // // $form = new block_mbsteachshare\form\coursefromtemplate(null, $customdata);
-
-            // // Pipe the coursebackupy to the teachSHARE Workflow.
-            // $coursedata = new stdClass();
-            // $templatemeta = new stdClass();
-
-            // // fwrite($fo, "\nCourseObj." . json_encode($course));die;
-            // // Create template on maininstance, reverse insert templatedata.
-            // $coursedata->course = $course->sitecourseid;
-            // $coursedata->withanon = $course->withanon;
-            // // $userdatacmids = $templateorig->userdatacmids;
-            // // $excludedeploydatacmids = $templateorig->excludedeploydatacmids;
-            // // Get new userid.
-            // $templatemeta->authorname = $course->publishername;
-            // $templatemeta->authorid = 1; // todo get user by fullname
-            // $templatemeta->licenseshortname = $course->license;
-
-            // $userdir = "hub/{$site->id}/$courseid";
-            // $directory = make_upload_directory($userdir);
-            // $backupfilepath = $directory . '/backup_' . $courseid . ".mbz";
-            // fwrite($fo, "\nPOS4");
-
         }
-
-        // $transaction->allow_commit();
         return $courseids;
-    }
-
-    /**
-     * Get a (primary) admin user to execute all the backups and restore processes.
-     */
-    public static function get_mbstpl_admin() {
-
-        // Get and verify all admins.
-        $alladmins = get_admins();
-
-        if (!$alladmins) {
-            return false;
-        }
-
-        // Get configurated admin id.
-        $mbstpladminid = get_config('block_mbsteachshare', 'deployinguser');
-
-        if (isset($alladmins[$mbstpladminid])) {
-            return $alladmins[$mbstpladminid];
-        }
-
-        $firstadmin = reset($alladmins);
-        return $firstadmin;
     }
 
     /**

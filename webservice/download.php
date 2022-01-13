@@ -34,18 +34,11 @@ $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the scre
 $imagewidth = optional_param('imagewidth', HUBLOGOIMAGEWIDTH, PARAM_ALPHANUM); //the screenshot width, can be set to 'original' to forcce original size
 $imageheight = optional_param('imageheight', HUBLOGOIMAGEHEIGHT, PARAM_INT); //the screenshot height
 
-$fo = fopen(__DIR__ . "/../log.txt", "a+");
-fwrite($fo, "\nDownload.php beginning");
-fwrite($fo, "\n" . json_encode($courseid));
-
 if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenabled')) {
-    // fwrite($fo, "\nUpload.php Step 1");
 
     switch ($filetype) {
 
         case HUB_BACKUP_FILE_TYPE:
-            // fwrite($fo, "\nBackup");
-
             // Check that the file is downloadable / set as visible
             $course = $DB->get_record('hub_course_directory', ['id' => $courseid]);
             if (!empty($course) && ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
@@ -55,31 +48,26 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
                 // either if the download is requested by a logged in user,
                 // either if the download is requested by a site (server side request).
                 $hubprivacy = get_config('local_hub', 'privacy');
-                // fwrite($fo, "\nPrivacy: " . $hubprivacy);
 
                 $token = optional_param('token', '', PARAM_ALPHANUM);
-                // fwrite($fo, "\nToken: " . $token);
-                // fwrite($fo, "\ncommunication: " . json_encode($hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token)));
+
                 // if (!empty($token)) {
                 //     // Check the communication token.
                 //     $hub = new local_hub();
                 //     $communication = $hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token);
                 // }
                 if ($hubprivacy != HUBPRIVATE ) { //or isloggedin() or !empty($communication)) {
-                    $userdir = "hub/" . $course->siteid . "/$courseid";
-                    // fwrite($fo, "\nDIR: " . $userdir);
+                    $userdir = "hub/" . $course->siteid . "/" . $course->sitecourseid;
                     $remotemoodleurl = optional_param('remotemoodleurl', '', PARAM_URL);
                     if (!empty($remotemoodleurl)) {
                         $remotemoodleurl = ',' . $remotemoodleurl . ',' . getremoteaddr();
                     } else {
                         $remotemoodleurl = ',' . 'unknown' . ',' . getremoteaddr();
                     }
-                    // fwrite($fo, "\nRemoteURL: " . $remotemoodleurl);
-                    // fwrite($fo, "\nFileLink: " . $CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz");
-                    // fwrite($fo, "\nFile Exists: " . json_encode(file_exists($CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz")));
+
                     // add_to_log(SITEID, 'local_hub', 'download backup', '', $courseid . $remotemoodleurl);
                     send_file(
-                        $CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz",
+                        $CFG->dataroot . '/' . $userdir . '/backup_' . $course->sitecourseid . ".mbz",
                         $course->shortname . ".mbz",
                         'default',
                         0,

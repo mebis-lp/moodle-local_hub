@@ -29,15 +29,10 @@ require_once($CFG->dirroot . '/local/hub/lib.php');
 require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/customhub/constants.php');
 // require_once($CFG->dirroot . '/admin/tool/customhub/classes/course_publish_manager.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
 
-$fo = fopen(__DIR__."/../log.txt", "a+");
-fwrite($fo, "\nUpload.php beginning");
-
 $token = optional_param('token', '', PARAM_ALPHANUM);
 $filetype = optional_param('filetype', '', PARAM_ALPHA); //can be screenshots, backup, ...
 $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the screenshot number of this course
 $courseid = optional_param('courseid', '', PARAM_ALPHANUM);
-fwrite($fo, "\n" . json_encode([$token, $filetype, $screenshotnumber, $courseid]));
-fwrite($fo, "\nFile" . json_encode($_FILES['file']));
 
 // check the communication token
 $hub = new local_hub();
@@ -52,31 +47,30 @@ if (!empty($token) && !empty($communication) and get_config('local_hub', 'hubena
     $course = $DB->get_record(
         'hub_course_directory',
         [
-            'id' => $courseid,
+            'sitecourseid' => $courseid,
             'siteid' => $site->id
         ]
     );
-    fwrite($fo, "\nCourse: " . json_encode($course));
 
     // TODO: Was passiert, wenn ein Kurs mehrfach hochgeladen/aktualisiert werden muss.
     if (!empty($course) && !empty($_FILES)) {
-        fwrite($fo, "Filetype: " . $filetype);
         switch ($filetype) {
             case HUB_BACKUP_FILE_TYPE:
                 //check that the backup doesn't already exist
-                $backup = $hub->backup_exits($siteid, $courseid);
-                fwrite($fo, "\nCheck Backup exists: " . json_encode($backup));
-
+                $backup = $hub->backup_exits($siteid, $course->sitecourseid);
                 if (empty($backup)) {
-                    $hub->add_backup($_FILES['file'], $site->id, $courseid);
+                    $hub->add_backup($_FILES['file'], $site->id, $course->sitecourseid);
                 }
-
-                // TODO: Backup verschieben in einen User-Backupbereich um über die Oberfläche darauf Zugriff zu haben -> frage welcher? -> vermutlich siteadmin oder einen manuellen User hub-admin
-                    // DAS IST ABER ETWAS FÜR DIE LANGE BANK -> PROBLEM: Screenshots liegen im gleichen Verzeichnis etc....
-                // TODO: Backup entpacken und in den teachSHARE Workflow einpflegen.
+                $event = \local_hub\event\backup_uploaded::create(
+                    [
+                        'context' => context_system::instance(),
+                        'other' => json_encode(['siteinfo' => $site, 'courseinfo' => $course])
+                    ]
+                );
+                $event->trigger();
                 break;
             case HUB_SCREENSHOT_FILE_TYPE:
-                $hub->add_screenshot($_FILES['file'], $siteid, $courseid, $screenshotnumber);
+                $hub->add_screenshot($_FILES['file'], $siteid, $course->sitecourseid, $screenshotnumber);
                 break;
         }
     }
