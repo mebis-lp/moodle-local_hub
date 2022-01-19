@@ -258,11 +258,11 @@ class local_hub_external extends external_api {
      */
     public static function unregister_courses_parameters() {
         return new external_function_parameters(
-                array(
+                [
                     'courseids' => new external_multiple_structure(
                             new external_value(PARAM_INT, 'the id of the course to unregister')
                     )
-                )
+                ]
         );
     }
 
@@ -272,13 +272,18 @@ class local_hub_external extends external_api {
      */
     public static function unregister_courses($courseids) {
         global $DB;
+        // $fo = fopen(__DIR__ . "/log.txt", 'a+');
+        // fwrite($fo, "\nStart Unregister");
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
         self::validate_context($context);
         require_capability('local/hub:unregistercourse', $context);
 
-        $params = self::validate_parameters(self::unregister_courses_parameters(),
-                        array('courseids' => $courseids));
+        $params = self::validate_parameters(
+            self::unregister_courses_parameters(),
+            ['courseids' => $courseids]
+        );
+        // fwrite($fo, json_encode($params));
 
         $transaction = $DB->start_delegated_transaction();
 
@@ -286,6 +291,7 @@ class local_hub_external extends external_api {
         $token = optional_param('wstoken', '', PARAM_ALPHANUM);
         $hub = new local_hub();
         $siteurl = $hub->get_communication(WSSERVER, REGISTEREDSITE, null, $token)->remoteurl;
+        // fwrite($fo, "\nSiteurl " . $siteurl);
 
         foreach ($params['courseids'] as $courseid) {
             $hub->unregister_course($courseid, $siteurl); //'true' indicates registration update mode
@@ -324,7 +330,7 @@ class local_hub_external extends external_api {
                                         'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
                                         'creatorname' => new external_value(PARAM_TEXT, 'creator name'),
                                         'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
-                                        'subject' => new external_value(PARAM_ALPHANUM, 'subject'),
+                                        'subject' => new external_value(PARAM_ALPHANUM,'subject', VALUE_OPTIONAL),
                                         'audience' => new external_value(PARAM_ALPHA, 'audience'),
                                         'educationallevel' => new external_value(PARAM_ALPHA, 'educational level', VALUE_OPTIONAL),
                                         'creatornotes' => new external_value(PARAM_RAW, 'creator notes'),
@@ -346,17 +352,18 @@ class local_hub_external extends external_api {
                                                             'fullname' => new external_value(PARAM_TEXT, 'the outcome fullname')
                                                 )), 'outcomes', VALUE_OPTIONAL),
                                         // MBS Additional Parameters for teachSHARE.
-                                        'schooltype' => new external_value(PARAM_TEXT, 'JSON of all selected schooltypes'),
+                                        'ltitool' => new external_value(PARAM_TEXT, 'JSON of ltitool', VALUE_OPTIONAL),
+                                        'schooltype' => new external_value(PARAM_TEXT,'JSON of all selected schooltypes', VALUE_OPTIONAL),
                                         'schoolyear' => new external_value(PARAM_TEXT, 'JSON of all selected schoolyears', VALUE_OPTIONAL),
-                                        'withanon' => new external_value(PARAM_BOOL, 'Boolean if there are userdata included'),
-                                        'tags' => new external_value(PARAM_TEXT, 'CSV of all tags of the course'),
-                                        'license' => new external_value(PARAM_TEXT, 'Shorthand of the license'),
-                                        'legalinfo_foreignstuff' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
-                                        'legalinfo_foreinstuffchanged' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
-                                        'legalinfo_ownstuff' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
-                                        'legalinfo_audioandimages' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
-                                        'legalinfo_privatedata' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
-                                        'legalinfo_termsofuse' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_REQUIRED),
+                                        'withanon' => new external_value(PARAM_BOOL,'Boolean if there are userdata included', VALUE_OPTIONAL),
+                                        'tags' => new external_value(PARAM_TEXT,'CSV of all tags of the course', VALUE_OPTIONAL),
+                                        'license' => new external_value(PARAM_TEXT,'Shorthand of the license', VALUE_OPTIONAL),
+                                        'legalinfo_foreignstuff' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_OPTIONAL),
+                                        'legalinfo_foreinstuffchanged' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_OPTIONAL),
+                                        'legalinfo_ownstuff' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_OPTIONAL),
+                                        'legalinfo_audioandimages' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_OPTIONAL),
+                                        'legalinfo_privatedata' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_OPTIONAL),
+                                        'legalinfo_termsofuse' => new external_value(PARAM_BOOL, 'Accepted legal info', VALUE_OPTIONAL),
                                     ]
                             )
                     )
@@ -370,6 +377,9 @@ class local_hub_external extends external_api {
      */
     public static function register_courses($courses) {
         global $CFG, $DB;
+
+        // $fo = fopen(__DIR__ . "/log.txt", 'a+');
+        // fwrite($fo, "\nStart Registration");
 
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
@@ -429,6 +439,7 @@ class local_hub_external extends external_api {
                 }
             }
         }
+        // fwrite($fo, "\nPos1");
 
         $courseids = [];
         foreach ($params['courses'] as $course) {
@@ -442,7 +453,7 @@ class local_hub_external extends external_api {
             $courseregids[] = $courseregid;
 
         }
-        return $courseids;
+        return $courseregids;
     }
 
     /**
@@ -491,6 +502,8 @@ class local_hub_external extends external_api {
      */
     public static function get_courses($search, $downloadable, $enrollable, $options = array()) {
         global $DB, $CFG, $USER;
+        // $fo = fopen(__DIR__. "/log.txt", 'a+');$poscounter = 1;
+        // fwrite($fo, "\nPos " .$poscounter); $poscounter++;
 
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
@@ -573,9 +586,9 @@ class local_hub_external extends external_api {
         }
 
         //create result
-        $coursesresult = array();
+        $coursesresult = [];
         foreach ($courses as $course) {
-            $courseinfo = array();
+            $courseinfo = [];
             $courseinfo['id'] = $course->id;
             $courseinfo['fullname'] = $course->fullname;
             $courseinfo['shortname'] = $course->shortname;
@@ -672,8 +685,7 @@ class local_hub_external extends external_api {
                 $coursesresult[] = $courseinfo;
             }
         }
-
-        return array('courses' => $coursesresult, 'coursetotal' => $coursetotal);
+        return ['courses' => $coursesresult, 'coursetotal' => $coursetotal];
     }
 
     /**
@@ -1225,4 +1237,78 @@ class local_hub_external extends external_api {
                         )
                 );
     }
+
+    // /**
+    //  * Returns description of method parameters
+    //  * @return external_function_parameters
+    //  */
+    // public static function get_courseinfo_parameters() {
+    //     return new external_function_parameters(
+    //         [
+    //             'courseregid' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the hub course directory'), 'id of course', VALUE_OPTIONAL),
+    //         ]
+    //     );
+    // }
+
+    // /**
+    //  * Return course information
+    //  * @return hub
+    //  */
+    // public static function get_courseinfo($courseregid) {
+    //     // Ensure the current user is allowed to run this function
+    //     $context = context_system::instance();
+    //     self::validate_context($context);
+
+    //     // //viewinfo: hub directory
+    //     // //viewsmallinfo: registered site
+    //     // if (!has_capability('local/hub:viewinfo', $context)
+    //     //         and !has_capability('local/hub:viewsmallinfo', $context)) {
+    //     //     throw new moodle_exception('nocapabalitytogetinfo', 'local_hub');
+    //     // }
+
+    //     self::validate_parameters(self::get_courseinfo_parameters(), ['courseregid' => $courseregid]);
+
+    //     $hub = new local_hub();
+    //     $courseinfo = $hub->get_courses(['ids' => $courseregid]);      
+    //     $resultinfo = array();
+    //     $resultinfo['name'] = $hubinfo['name'];
+    //     $resultinfo['description'] = clean_param($hubinfo['description'], PARAM_TEXT);
+    //     $resultinfo['hublogo'] = $hubinfo['hublogo'];
+    //     $resultinfo['url'] = $hubinfo['url'];
+    //     $resultinfo['language'] = $hubinfo['language'];
+    //     $resultinfo['sites'] = $hubinfo['sites'];
+    //     $resultinfo['courses'] = $hubinfo['courses'];
+    //     $resultinfo['enrollablecourses'] = $hubinfo['enrollablecourses'];
+    //     $resultinfo['downloadablecourses'] = $hubinfo['downloadablecourses'];
+    //     if (has_capability('local/hub:viewinfo', $context)) {
+    //          $resultinfo['contactname'] = $hubinfo['contactname'];
+    //          $resultinfo['contactemail'] = $hubinfo['contactemail'];           
+    //          $resultinfo['privacy'] = $hubinfo['privacy'];                       
+    //     }
+
+    //     return $resultinfo;
+    // }
+
+    // /**
+    //  * Returns description of method result value
+    //  * @return external_description
+    //  */
+    // public static function get_courseinfo_returns() {
+    //     return new external_single_structure(
+    //             array(
+    //                 'name' => new external_value(PARAM_TEXT, 'hub name'),
+    //                 'description' => new external_value(PARAM_TEXT, 'hub description'),
+    //                 'contactname' => new external_value(PARAM_TEXT, 'hub server administrator name', VALUE_OPTIONAL),
+    //                 'contactemail' => new external_value(PARAM_EMAIL, 'hub server administrator email', VALUE_OPTIONAL),
+    //                 'hublogo' => new external_value(PARAM_INT, 'does a hub logo exist'),
+    //                 'privacy' => new external_value(PARAM_ALPHA, 'hub privacy', VALUE_OPTIONAL),
+    //                 'language' => new external_value(PARAM_ALPHANUMEXT, 'hub main language'),
+    //                 'url' => new external_value(PARAM_URL, 'hub url'),
+    //                 'sites' => new external_value(PARAM_NUMBER, 'number of registered sites on this hub', VALUE_OPTIONAL),
+    //                 'courses' => new external_value(PARAM_NUMBER, 'number total of courses from all registered sites on this hub', VALUE_OPTIONAL),
+    //                 'enrollablecourses' => new external_value(PARAM_INT, 'number total of visible enrollable courses on this hub', VALUE_OPTIONAL),
+    //                 'downloadablecourses' => new external_value(PARAM_INT, 'number total of visible downloadable courses on this hub', VALUE_OPTIONAL),
+    //             )
+    //             , 'hub information');
+    // }
 }

@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/customhub/constants.php'
 $token = optional_param('token', '', PARAM_ALPHANUM);
 $filetype = optional_param('filetype', '', PARAM_ALPHA); //can be screenshots, backup, ...
 $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the screenshot number of this course
-$courseid = optional_param('courseid', '', PARAM_ALPHANUM);
+$courseregid = optional_param('courseid', '', PARAM_ALPHANUM); // Get the id from hub_course_directory.
 
 // check the communication token
 $hub = new local_hub();
@@ -47,7 +47,7 @@ if (!empty($token) && !empty($communication) and get_config('local_hub', 'hubena
     $course = $DB->get_record(
         'hub_course_directory',
         [
-            'sitecourseid' => $courseid,
+            'id' => $courseregid,
             'siteid' => $site->id
         ]
     );
@@ -57,7 +57,8 @@ if (!empty($token) && !empty($communication) and get_config('local_hub', 'hubena
         switch ($filetype) {
             case HUB_BACKUP_FILE_TYPE:
                 //check that the backup doesn't already exist
-                $backup = $hub->backup_exits($siteid, $course->sitecourseid);
+                $backup = $hub->backup_exits($site->id, $course->sitecourseid);
+
                 if (empty($backup)) {
                     $hub->add_backup($_FILES['file'], $site->id, $course->sitecourseid);
                 }
@@ -70,7 +71,7 @@ if (!empty($token) && !empty($communication) and get_config('local_hub', 'hubena
                 $event->trigger();
                 break;
             case HUB_SCREENSHOT_FILE_TYPE:
-                $hub->add_screenshot($_FILES['file'], $siteid, $course->sitecourseid, $screenshotnumber);
+                $hub->add_screenshot($_FILES['file'], $site->id, $course->sitecourseid, $screenshotnumber);
                 break;
         }
     }
