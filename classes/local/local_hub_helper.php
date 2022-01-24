@@ -61,11 +61,9 @@ class local_hub_helper {
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
         // Get the courserecord from hub_course_directory.
-        $coursereg = self::get_registered_course($course->sitecourseid, $course->siteid);
+        $hubcourse = self::get_registered_course($course->sitecourseid, $course->siteid);
 
-        $uploaddir = "hub/" . $course->siteid . "/" . $course->sitecourseid;
-        $backupfilepath = $CFG->dataroot . '/' . $uploaddir . '/backup_' . $course->sitecourseid . ".mbz";
-        
+        $backupfilepath = $hubcourse->backupfilepath;       
         if (!is_file($backupfilepath)) {
             self::trigger_restore_error_event('Backupfile was not found. ('.$backupfilepath.')');
             throw new \moodle_exception('errorrestore_archive_not_found', 'local_hub', '', null, $backupfilepath);
@@ -77,7 +75,7 @@ class local_hub_helper {
             self::trigger_restore_error_event('Backuptempdir could not be created.');
             throw new \restore_controller_exception('cannot_create_backup_temp_dir');
         }
-        $tempdir   = 'hubtemplating_' . $coursereg->id . '_' . time();
+        $tempdir   = 'hubtemplating_' . $hubcourse->id . '_' . time();
         $backuptmpdir = make_backup_temp_directory($tempdir);
 
         // Copy and extract backup file to temp dir in order to be restored.
@@ -95,7 +93,7 @@ class local_hub_helper {
         // Load info.
         $info = \backup_general_helper::get_backup_information($tempdir);
 
-        $shortname = self::get_unused_shortname("demo_" . $coursereg->id . "_" . $course->shortname);
+        $shortname = self::get_unused_shortname("demo_" . $hubcourse->id . "_" . $course->shortname);
         // Transaction.
         $transaction = $DB->start_delegated_transaction();
         $cdata = (object) [
@@ -150,10 +148,20 @@ class local_hub_helper {
         }
 
         // Set the demo course url.
-        self::set_demo_course_url($coursereg->id, $newcourse->id);
+        self::set_demo_course_url($hubcourse->id, $newcourse->id);
+        self::set_demo_courseid($hubcourse->id, $newcourse->id);
+
+        $event = \local_hub\event\course_restore_completed::create(
+            [
+                'context' => \context_system::instance(),
+                'courseid' => $newcourse->id,
+                'other' => json_encode(['courseregid' => $hubcourse->id])
+            ]
+        );
+        $event->trigger();      
         
         // TODO: REMOVE THIS CALL. THIS IS ONLY FOR DEV PURPOSES.
-        self::toggle_course_visibility($coursereg->id);
+        self::toggle_course_visibility($hubcourse->id);
     }
 
     /**
@@ -224,6 +232,16 @@ class local_hub_helper {
         global $DB;
         $url = new \moodle_url('/course/view.php', ['id' => $courseid]);
         $DB->set_field('hub_course_directory', 'courseurl', (string) $url, ['id' => $id]);
+    }
+
+    /**
+     * Sets the demo courseid to hub_course_directory.
+     * @param int $id ID of the hub_course_directory
+     * @param int $courseid of the course.
+     */
+    public static function set_demo_courseid($id, $courseid) {
+        global $DB;
+        $DB->set_field('hub_course_directory', 'coursemapid', $courseid, ['id' => $id]);
     }
 
     /**

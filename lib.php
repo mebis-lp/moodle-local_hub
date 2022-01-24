@@ -133,6 +133,8 @@ define('COURSEVISIBILITY_VISIBLE', '1');
 define('COURSEVISIBILITY_NOTVISIBLE', '0');
 
 class local_hub {
+
+    const PREFIX_BACKUPFILE = 'hubbkp_';
 ///////////////////////////
 /// DB Facade functions  //
 ///////////////////////////
@@ -1104,8 +1106,12 @@ class local_hub {
 
         // Delete all screenshots if required
         if (!empty($course->deletescreenshots)) {
-
-            $userdir = "hub/$siteid/$courseid";
+            $courseid = $course->sitecourseid;
+            
+            $diroptions = new stdClass();
+            $diroptions->siteid = $siteid;
+            $diroptions->courseid = $courseid;
+            $userdir = $this->get_backup_directory($diroptions);
 
             $directory = make_upload_directory($userdir);
 
@@ -1118,6 +1124,36 @@ class local_hub {
             }
         }
         return $courseregid;
+    }
+
+    /**
+     * Get the directory, where backups will be stored.
+     * @return string
+     */
+    public function get_backup_directory() {
+        if($backuplocalpath = get_config('local_hub', 'backuplocalpath')) {
+            return  $backuplocalpath . '/backup';
+        }
+        throw new moodle_exception('error_localbackuppath_not_setup', 'hub');
+    }
+
+    /**
+     * Get backups filename.
+     * @param int $hubcourseid
+     * @return string
+     */
+    public function get_backup_filename($hubcourseid) {
+        return self::PREFIX_BACKUPFILE . $hubcourseid . '_' . time() . '.mbz';
+    }
+
+    /**
+     * Checks if a directory is empty.
+     * @param string $dir absolute path of the directory.
+     * @return bool.
+     */
+    public function is_dir_empty($dir) {
+        if (!is_readable($dir)) return null;
+        return (count(scandir($dir)) == 2);
     }
 
     /**
@@ -1532,9 +1568,9 @@ class local_hub {
      * @param integer $courseid
      */
     public function add_screenshot($file, $siteid, $courseid, $screenshotnumber) {
+        global $CFG;
 
-        $dir = "hub/$siteid/$courseid";
-
+        $dir = $this->get_backup_directory();
         $directory = make_upload_directory($dir);
 
         //get the extension of this image in order to check that it is an image
@@ -1544,11 +1580,10 @@ class local_hub {
 
             //delete previously existing screenshot
             if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
-                unlink($directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
+                unlink($CFG->dataroot . "/" .$directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
             }
 
-            move_uploaded_file($file['tmp_name'],
-                    $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
+            move_uploaded_file($file['tmp_name'], $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
         }
     }
 
@@ -1559,7 +1594,7 @@ class local_hub {
      */
     public function delete_screenshot($siteid, $courseid, $screenshotnumber) {
         global $CFG;
-        $directory = "hub/$siteid/$courseid";
+        $directory = $this->get_backup_directory();
         $filepath = $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber;
         unlink($filepath);
     }
@@ -1573,8 +1608,7 @@ class local_hub {
      */
     public function screenshot_exists($siteid, $courseid, $screenshotnumber) {
         global $CFG;
-
-        $directory = "hub/$siteid/$courseid";
+        $directory = $this->get_backup_directory();
         return file_exists($CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
     }
 
@@ -1587,7 +1621,7 @@ class local_hub {
      */
     public function sanitize_screenshots($siteid, $courseid) {
         global $CFG, $DB;
-        $directory = "hub/$siteid/$courseid";
+        $directory = $this->get_backup_directory();
 
         $existingscreenshots = array();
         for ($screenshotnumber = 1; $screenshotnumber <= MAXSCREENSHOTSNUMBER; $screenshotnumber++) {
@@ -1601,16 +1635,14 @@ class local_hub {
         foreach ($existingscreenshots as $screenshotnumber) {
             $newscreenshotnumber++;
             $filepath = $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber;
-            copy($filepath,
-                    $CFG->dataroot . '/' . $directory . '/tmp_screenshot_' . $courseid . "_" . $newscreenshotnumber);
+            copy($filepath, $CFG->dataroot . '/' . $directory . '/tmp_screenshot_' . $courseid . "_" . $newscreenshotnumber);
             unlink($filepath);
         }
 
         //rename the tmp screenshot into real screenshot
         for ($screenshotnumber = 1; $screenshotnumber <= $newscreenshotnumber; $screenshotnumber++) {
             $filepath = $CFG->dataroot . '/' . $directory . '/tmp_screenshot_' . $courseid . "_" . $screenshotnumber;
-            copy($filepath,
-                    $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
+            copy($filepath, $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
             unlink($filepath);
         }
 
@@ -1627,40 +1659,39 @@ class local_hub {
      * TODO: this is temporary till the way to send file by ws is defined
      * Add a backup to a course
      * @param array $file
-     * @param integer $siteid
-     * @param integer $courseid
+     * @param object $hubcourse
      */
-    public function add_backup($file, $siteid, $courseid) {
- 
-        $userdir = "hub/$siteid/$courseid";
+    public function add_backup($file, $hubcourse) {
+        global $DB, $CFG;
+
+        $userdir = $this->get_backup_directory();
 
         $directory = make_upload_directory($userdir);
+        $backupfilename = $this->get_backup_filename($hubcourse->id);
 
-        move_uploaded_file($file['tmp_name'], $directory . '/backup_' . $courseid . ".mbz");
+        move_uploaded_file($file['tmp_name'], $directory . '/' . $backupfilename);
+
+        $DB->set_field('hub_course_directory', 'backupfilepath', $directory . '/' . $backupfilename, ['id' => $hubcourse->id]);
     }
 
     /**
      * TODO: temporary function till file download design done  (course unique ref not used)
      * Check a backup exists
-     * @param int $courseid
+     * @param object $hubcourse
+     * @return bool
      */
-    public function backup_exits($siteid, $courseid) {
-        global $CFG;
-
-        $directory = "hub/$siteid/$courseid";
-        return file_exists($CFG->dataroot . '/' . $directory . '/backup_' . $courseid . ".mbz");
+    public function backup_exits($hubcourse) {
+        return file_exists($hubcourse->backupfilepath);
     }
 
     /**
      * TODO: temporary function till file download design done  (course unique ref not used)
      * Return backup size
-     * @param int $courseid
+     * @param object $hubcourse
      * @return int
      */
-    public function get_backup_size($siteid, $courseid) {
-        global $CFG;
-        $directory = "hub/$siteid/$courseid";
-        return filesize($CFG->dataroot . '/' . $directory . '/backup0_' . $courseid . ".mbz");
+    public function get_backup_size($hubcourse) {
+        return filesize($hubcourse->backupfilepath);
     }
 
     /**

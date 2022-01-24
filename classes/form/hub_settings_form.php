@@ -26,6 +26,8 @@
 namespace local_hub\form;
 
 defined('MOODLE_INTERNAL') || die();
+require_once($CFG->dirroot . "/local/hub/lib.php");
+
 /**
  * This form displays hub settings
  *
@@ -240,6 +242,27 @@ class hub_settings_form extends \moodleform {
         );
         // $mform->setAdvanced('maxcoursesperday');
         $mform->setDefault('maxcoursesperday', $hubmaxpublication);
+
+        // Adding local backup path
+        $hublib = new \local_hub();
+        $elementtypebackupdir = 'text';
+        if(!$hublib->is_dir_empty($CFG->dataroot . "/" . get_config('local_hub', 'backuplocalpath'))) { 
+            $elementtypebackupdir = 'static';
+        }
+
+        $mform->addElement(
+            $elementtypebackupdir,
+            'backuplocalpath',
+            get_string('backuplocalpath', 'local_hub'),
+        );
+        $mform->disabledIf('backuplocalpath', 'directoryempty', 'eq', 0);
+        $mform->setType('backuplocalpath', PARAM_TEXT);
+        $mform->addHelpButton(
+            'backuplocalpath',
+            'backuplocalpath',
+            'local_hub'
+        );
+        $mform->setDefault('backuplocalpath', 'hub');
 
         $this->add_action_buttons(false, get_string('update'));
     }

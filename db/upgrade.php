@@ -595,5 +595,19 @@ function xmldb_local_hub_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016071400, 'local', 'hub');
     }
 
+    if ($oldversion < 2017052404) {
+
+        // Define field backupfilepath to be added to hub_course_directory.
+        $table = new xmldb_table('hub_course_directory');
+        $field = new xmldb_field('backupfilepath', XMLDB_TYPE_TEXT, null, null, null, null, null, 'demourl');
+
+        // Conditionally launch add field backupfilepath.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Hub savepoint reached.
+        upgrade_plugin_savepoint(true, 2017052404, 'local', 'hub');
+    }
     return true;
 }

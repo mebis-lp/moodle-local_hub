@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../config.php');
+global $CFG;
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/hub/admin/forms.php');
 require_once($CFG->dirroot . '/webservice/lib.php');
@@ -64,6 +65,8 @@ if (!empty($fromform) and confirm_sesskey()) {
 
     set_config('enablerssfeeds', empty($fromform->enablerssfeeds) ? 0 : $fromform->enablerssfeeds, 'local_hub');
     set_config('rsssecret', empty($fromform->rsssecret) ? '' : $fromform->rsssecret, 'local_hub');
+
+    set_config('backuplocalpath', empty($fromform->backuplocalpath) || !empty(get_config('local_hub', 'backuplocalpath'))  ? 'hub' : $fromform->backuplocalpath, 'local_hub');
 
     // set_config('sendyurl', empty($fromform->sendyurl)?'':$fromform->sendyurl, 'local_hub');
     // set_config('sendylistid', empty($fromform->sendylistid)?'':$fromform->sendylistid, 'local_hub');

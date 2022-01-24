@@ -330,7 +330,7 @@ class local_hub_external extends external_api {
                                         'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
                                         'creatorname' => new external_value(PARAM_TEXT, 'creator name'),
                                         'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
-                                        'subject' => new external_value(PARAM_ALPHANUM,'subject', VALUE_OPTIONAL),
+                                        'subject' => new external_value(PARAM_TEXT,'subject', VALUE_OPTIONAL),
                                         'audience' => new external_value(PARAM_ALPHA, 'audience'),
                                         'educationallevel' => new external_value(PARAM_ALPHA, 'educational level', VALUE_OPTIONAL),
                                         'creatornotes' => new external_value(PARAM_RAW, 'creator notes'),
@@ -376,11 +376,6 @@ class local_hub_external extends external_api {
      * @return array ids of created courses
      */
     public static function register_courses($courses) {
-        global $CFG, $DB;
-
-        // $fo = fopen(__DIR__ . "/log.txt", 'a+');
-        // fwrite($fo, "\nStart Registration");
-
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
         self::validate_context($context);
@@ -453,6 +448,16 @@ class local_hub_external extends external_api {
             $courseregids[] = $courseregid;
 
         }
+        fwrite($fo, "\nHallo ENDE");
+        // Trigger an event so that other plugins can hook in here.
+        $event = \local_hub\event\course_registration_finished::create(
+            [
+                'context' => context_system::instance(),
+                'other' => json_encode(['courseregids' => $courseregids, 'courseinfo' => $params['courses']])
+            ]
+        );
+        $event->trigger();
+
         return $courseregids;
     }
 
@@ -1237,78 +1242,4 @@ class local_hub_external extends external_api {
                         )
                 );
     }
-
-    // /**
-    //  * Returns description of method parameters
-    //  * @return external_function_parameters
-    //  */
-    // public static function get_courseinfo_parameters() {
-    //     return new external_function_parameters(
-    //         [
-    //             'courseregid' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the hub course directory'), 'id of course', VALUE_OPTIONAL),
-    //         ]
-    //     );
-    // }
-
-    // /**
-    //  * Return course information
-    //  * @return hub
-    //  */
-    // public static function get_courseinfo($courseregid) {
-    //     // Ensure the current user is allowed to run this function
-    //     $context = context_system::instance();
-    //     self::validate_context($context);
-
-    //     // //viewinfo: hub directory
-    //     // //viewsmallinfo: registered site
-    //     // if (!has_capability('local/hub:viewinfo', $context)
-    //     //         and !has_capability('local/hub:viewsmallinfo', $context)) {
-    //     //     throw new moodle_exception('nocapabalitytogetinfo', 'local_hub');
-    //     // }
-
-    //     self::validate_parameters(self::get_courseinfo_parameters(), ['courseregid' => $courseregid]);
-
-    //     $hub = new local_hub();
-    //     $courseinfo = $hub->get_courses(['ids' => $courseregid]);      
-    //     $resultinfo = array();
-    //     $resultinfo['name'] = $hubinfo['name'];
-    //     $resultinfo['description'] = clean_param($hubinfo['description'], PARAM_TEXT);
-    //     $resultinfo['hublogo'] = $hubinfo['hublogo'];
-    //     $resultinfo['url'] = $hubinfo['url'];
-    //     $resultinfo['language'] = $hubinfo['language'];
-    //     $resultinfo['sites'] = $hubinfo['sites'];
-    //     $resultinfo['courses'] = $hubinfo['courses'];
-    //     $resultinfo['enrollablecourses'] = $hubinfo['enrollablecourses'];
-    //     $resultinfo['downloadablecourses'] = $hubinfo['downloadablecourses'];
-    //     if (has_capability('local/hub:viewinfo', $context)) {
-    //          $resultinfo['contactname'] = $hubinfo['contactname'];
-    //          $resultinfo['contactemail'] = $hubinfo['contactemail'];           
-    //          $resultinfo['privacy'] = $hubinfo['privacy'];                       
-    //     }
-
-    //     return $resultinfo;
-    // }
-
-    // /**
-    //  * Returns description of method result value
-    //  * @return external_description
-    //  */
-    // public static function get_courseinfo_returns() {
-    //     return new external_single_structure(
-    //             array(
-    //                 'name' => new external_value(PARAM_TEXT, 'hub name'),
-    //                 'description' => new external_value(PARAM_TEXT, 'hub description'),
-    //                 'contactname' => new external_value(PARAM_TEXT, 'hub server administrator name', VALUE_OPTIONAL),
-    //                 'contactemail' => new external_value(PARAM_EMAIL, 'hub server administrator email', VALUE_OPTIONAL),
-    //                 'hublogo' => new external_value(PARAM_INT, 'does a hub logo exist'),
-    //                 'privacy' => new external_value(PARAM_ALPHA, 'hub privacy', VALUE_OPTIONAL),
-    //                 'language' => new external_value(PARAM_ALPHANUMEXT, 'hub main language'),
-    //                 'url' => new external_value(PARAM_URL, 'hub url'),
-    //                 'sites' => new external_value(PARAM_NUMBER, 'number of registered sites on this hub', VALUE_OPTIONAL),
-    //                 'courses' => new external_value(PARAM_NUMBER, 'number total of courses from all registered sites on this hub', VALUE_OPTIONAL),
-    //                 'enrollablecourses' => new external_value(PARAM_INT, 'number total of visible enrollable courses on this hub', VALUE_OPTIONAL),
-    //                 'downloadablecourses' => new external_value(PARAM_INT, 'number total of visible downloadable courses on this hub', VALUE_OPTIONAL),
-    //             )
-    //             , 'hub information');
-    // }
 }

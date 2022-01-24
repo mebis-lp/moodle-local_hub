@@ -40,8 +40,8 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
 
         case HUB_BACKUP_FILE_TYPE:
             // Check that the file is downloadable / set as visible
-            $course = $DB->get_record('hub_course_directory', ['id' => $courseid]);
-            if (!empty($course) && ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
+            $hubcourse = $DB->get_record('hub_course_directory', ['id' => $courseid]);
+            if (!empty($hubcourse) && ($hubcourse->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
                 // fwrite($fo, "\nFile is downloadable");
 
                 // If the hub is set as PRIVATE, allow the download
@@ -57,7 +57,7 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
                 //     $communication = $hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token);
                 // }
                 if ($hubprivacy != HUBPRIVATE ) { //or isloggedin() or !empty($communication)) {
-                    $userdir = "hub/" . $course->siteid . "/" . $course->sitecourseid;
+                    // $userdir = "hub/" . $course->siteid . "/" . $course->sitecourseid;
                     $remotemoodleurl = optional_param('remotemoodleurl', '', PARAM_URL);
                     if (!empty($remotemoodleurl)) {
                         $remotemoodleurl = ',' . $remotemoodleurl . ',' . getremoteaddr();
@@ -67,8 +67,9 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
 
                     // add_to_log(SITEID, 'local_hub', 'download backup', '', $courseid . $remotemoodleurl);
                     send_file(
-                        $CFG->dataroot . '/' . $userdir . '/backup_' . $course->sitecourseid . ".mbz",
-                        $course->shortname . ".mbz",
+                        $hubcourse->backupfilepath,
+                        // $CFG->dataroot . '/' . $userdir . '/backup_' . $hubcourse->sitecourseid . ".mbz",
+                        $hubcourse->shortname . ".mbz",
                         'default',
                         0,
                         false,

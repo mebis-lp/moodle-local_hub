@@ -509,9 +509,14 @@ $string['top10sitesbycourses'] = 'Top 10 sites by courses';
 $string['top10countriesbyregistration'] = 'Top 10 countries by registrations';
 $string['versionsused'] = 'Versions used';
 
+$string['backuplocalpath'] = 'Local path for the backup files relative to moodledata';
+$string['backuplocalpath_help'] = 'This setting can be changed only as long as there are no backup files in the respective directory.';
 $string['errorrestore_archive_not_found'] = 'Archive (mbz) not found.';
+$string['error_localbackuppath_not_setup'] = 'The localbackuppath is not specified in hub/admin/settings.php';
 $string['error_no_siteadmins_defined'] = 'There is no siteadmin defined in config.php. Please define a siteadmin user $CFG->siteadmin = <id>,<id>,...';
 $string['error_restoring_backupfile'] = 'Error when restoring the backup file: {$a}';
 $string['error_restored_course_not_found'] = 'The restored course could not be found.';
 $string['eventname_backup_uploaded'] = 'A new backupfile was uploaded to this hub.';
 $string['eventname_restore_error_occured'] = 'A backup restore error occured: Step {$a}';
+$string['eventname_course_registration_finished'] = 'The course was registered at the hub.';
+$string['eventname_course_restore_completed'] = 'The course was restored at the hub.';
