@@ -515,9 +515,15 @@ class local_hub_external extends external_api {
         self::validate_context($context);
         require_capability('local/hub:view', $context);
 
-        $params = self::validate_parameters(self::get_courses_parameters(),
-                        array('search' => $search, 'downloadable' => $downloadable,
-                            'enrollable' => $enrollable, 'options' => $options));
+        $params = self::validate_parameters(
+            self::get_courses_parameters(),
+            [
+                'search' => $search,
+                'downloadable' => $downloadable,
+                'enrollable' => $enrollable,
+                'options' => $options
+            ]
+        );
 
         //retieve siteid
         $onlyvisible = true;
