@@ -61,7 +61,7 @@ class local_hub_helper {
         require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
         // Get the courserecord from hub_course_directory.
-        $hubcourse = self::get_registered_course($course->sitecourseid, $course->siteid);
+        $hubcourse = self::get_registered_course($course->sitecourseid, $course->siteid, $course->enrollable);
 
         $backupfilepath = $hubcourse->backupfilepath;       
         if (!is_file($backupfilepath)) {
@@ -210,15 +210,20 @@ class local_hub_helper {
     /**
      * Get the first registered instance of a course, related to hub_course_directory.
      */
-    public static function get_registered_course ($courseid, $siteid) {
+    public static function get_registered_course ($courseid, $siteid, $enrollable = 1) {
         global $DB;
+        $conditions = [
+            'sitecourseid' => $courseid,
+            'siteid' => $siteid
+        ];
+
+        if (empty($enrolable)) {
+            $conditions['enrollable'] = $enrollable;
+        }
 
         $courses = $DB->get_records(
             'hub_course_directory',
-            [
-                'sitecourseid' => $courseid,
-                'siteid' => $siteid
-            ]
+            $conditions
         );
         return array_shift($courses);
     }
