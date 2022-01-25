@@ -520,3 +520,4 @@ $string['eventname_backup_uploaded'] = 'A new backupfile was uploaded to this hu
 $string['eventname_restore_error_occured'] = 'A backup restore error occured: Step {$a}';
 $string['eventname_course_registration_finished'] = 'The course was registered at the hub.';
 $string['eventname_course_restore_completed'] = 'The course was restored at the hub.';
+$string['eventname_get_courses_called'] = 'Get courses WS was called.';
