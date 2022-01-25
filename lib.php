@@ -1002,9 +1002,7 @@ class local_hub {
 
         $site = $this->get_site_by_url($siteurl);
         $course = $this->get_course($courseid);
-        // $fo = fopen(__DIR__ . "/log.txt", 'a+');
-        // fwrite($fo, "\n" .json_encode($site) );
-        // fwrite($fo, "\n" . json_encode($course));
+
         //check that the course exist (otherwise unregister)
         if (!empty($course)) {
             //check that the course match the site
@@ -1029,7 +1027,6 @@ class local_hub {
      */
     public function register_course($siteid, $course, $siteurl) {
         global $CFG;
-        // $fo = fopen(__DIR__ . "/log.txt", 'a+');
 
         //$siteinfo must be an object
         if (is_array($course)) {
@@ -1050,6 +1047,9 @@ class local_hub {
             $course->format = 'mbz';
         } else {
             $course->format = 'url';
+
+            // TODO: Make an own column in course_directory table.
+            $course->coverage = $course->ltitool;
         }
 
         if ($site->trusted) {
@@ -1069,13 +1069,11 @@ class local_hub {
             //delete previous course content
             $this->delete_course_contents($courseregid);
         } else {
-            // fwrite($fo, "\nADD Course");
 
             $courseregid = $this->add_course($course);
             // add_to_log(SITEID, 'local_hub', 'course registration', '', $courseregid);
         }
-        // $fo = fopen(__DIR__ . "/log.txt", "a+");
-        // fwrite($fo, "\nPos1.");
+
         //update outcomes
 
         if (!isset($course->outcomes)) {
@@ -1096,8 +1094,6 @@ class local_hub {
         // --- MBS-HACK (Peter Mayer)
         //add new course contents
         if (!empty($course->contents)) {
-            // fwrite($fo, "\nCC: " . json_encode($course->contents));
-            // fwrite($fo, "\nCRID: " . $courseregid);
             foreach ($course->contents as $content) {
                 $content['courseid'] = $courseregid;
                 $this->add_course_content($content);

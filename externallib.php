@@ -272,8 +272,7 @@ class local_hub_external extends external_api {
      */
     public static function unregister_courses($courseids) {
         global $DB;
-        // $fo = fopen(__DIR__ . "/log.txt", 'a+');
-        // fwrite($fo, "\nStart Unregister");
+
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
         self::validate_context($context);
@@ -283,7 +282,6 @@ class local_hub_external extends external_api {
             self::unregister_courses_parameters(),
             ['courseids' => $courseids]
         );
-        // fwrite($fo, json_encode($params));
 
         $transaction = $DB->start_delegated_transaction();
 
@@ -291,7 +289,6 @@ class local_hub_external extends external_api {
         $token = optional_param('wstoken', '', PARAM_ALPHANUM);
         $hub = new local_hub();
         $siteurl = $hub->get_communication(WSSERVER, REGISTEREDSITE, null, $token)->remoteurl;
-        // fwrite($fo, "\nSiteurl " . $siteurl);
 
         foreach ($params['courseids'] as $courseid) {
             $hub->unregister_course($courseid, $siteurl); //'true' indicates registration update mode
@@ -434,7 +431,6 @@ class local_hub_external extends external_api {
                 }
             }
         }
-        // fwrite($fo, "\nPos1");
 
         $courseids = [];
         foreach ($params['courses'] as $course) {
@@ -448,7 +444,7 @@ class local_hub_external extends external_api {
             $courseregids[] = $courseregid;
 
         }
-        fwrite($fo, "\nHallo ENDE");
+
         // Trigger an event so that other plugins can hook in here.
         $event = \local_hub\event\course_registration_finished::create(
             [
@@ -507,8 +503,6 @@ class local_hub_external extends external_api {
      */
     public static function get_courses($search, $downloadable, $enrollable, $options = array()) {
         global $DB, $CFG, $USER;
-        // $fo = fopen(__DIR__. "/log.txt", 'a+');$poscounter = 1;
-        // fwrite($fo, "\nPos " .$poscounter); $poscounter++;
 
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
