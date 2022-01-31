@@ -19,7 +19,7 @@ if (!empty($cool) and confirm_sesskey()) {
         $site->cool = MAXVOTES;
         $site->cooldate = time();
         $DB->update_record("hub_site_directory", $site);
-        add_to_log($SITE->id, "resource", "cool", "view.php?id=380", "COOL: $site->url, $site->sitename", 380, $USER->id);
+        // add_to_log($SITE->id, "resource", "cool", "view.php?id=380", "COOL: $site->url, $site->sitename", 380, $USER->id);
         redirect("index.php?country=$site->country", "$site->sitename marked as COOL!", 1);
     }
 }
@@ -29,7 +29,7 @@ if (!empty($uncool) and confirm_sesskey()) {
         $site->cool = 0;
         $site->cooldate = 0;
         $DB->update_record("hub_site_directory", $site);
-        add_to_log($SITE->id, "resource", "uncool", "view.php?id=380", "UNCOOL: $site->url, $site->sitename", 380, $USER->id);
+        // add_to_log($SITE->id, "resource", "uncool", "view.php?id=380", "UNCOOL: $site->url, $site->sitename", 380, $USER->id);
         redirect("index.php?country=$site->country", "$site->sitename suddenly seems NOT SO COOL! ", 1);
     }
 }
@@ -38,14 +38,14 @@ if (!empty($delete) and confirm_sesskey()) {
     if ($site = $DB->get_record("hub_site_directory", array("id"=>$delete))) {
         $DB->delete_records("hub_site_directory", array("id"=>$delete));
     }
-    add_to_log($SITE->id, "resource", "delete", "view.php?id=380", "DELETE: $site->url, $site->sitename", 380, $USER->id);
+    // add_to_log($SITE->id, "resource", "delete", "view.php?id=380", "DELETE: $site->url, $site->sitename", 380, $USER->id);
     $SESSION->lang = "en";
     redirect("index.php?country=$site->country", "$site->sitename has been completely DELETED!", 1);
 }
 
 if ($site = data_submitted() and confirm_sesskey()) {
     $DB->update_record("hub_site_directory", $site);
-    add_to_log($SITE->id, "resource", "edit", "view.php?id=380", "UPDATE: $site->url, $site->sitename", 380, $USER->id);
+    // add_to_log($SITE->id, "resource", "edit", "view.php?id=380", "UPDATE: $site->url, $site->sitename", 380, $USER->id);
     $SESSION->lang = "en";
     redirect("index.php?country=$site->country", "$site->sitename has been UPDATED!", 1);
 }

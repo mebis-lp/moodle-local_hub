@@ -21,48 +21,52 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
 
-/// Add hub administration pages to the Moodle administration menu
-$ADMIN->add('root', new admin_category('local_hub', get_string('hub', 'local_hub')));
+global $CFG;
 
-$ADMIN->add('local_hub', new admin_externalpage('hubsettings', get_string('settings', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/settings.php",
+if (is_siteadmin()) {
+        // Add hub administration pages to the Moodle administration menu.
+        $ADMIN->add('root', new admin_category('local_hub', get_string('hub', 'local_hub')));
+
+        $ADMIN->add('local_hub', new admin_externalpage('hubsettings', get_string('settings', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/settings.php",
+                'moodle/site:config'));
+
+        $ADMIN->add('local_hub', new admin_externalpage('managesites', get_string('managesites', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/managesites.php",
+                'moodle/site:config'));
+
+        $ADMIN->add('local_hub', new admin_externalpage('managecourses', get_string('managecourses', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/managecourses.php",
+                'moodle/site:config'));
+
+        $ADMIN->add('local_hub', new admin_externalpage('hubregistration', get_string('registration', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/register.php",
+                'moodle/site:config'));
+
+        $ADMIN->add('local_hub', new admin_externalpage('registrationconfirmed',
+                get_string('registrationconfirmed', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/confirmregistration.php",
+                'moodle/site:config', true));
+
+        $ADMIN->add('local_hub', new admin_externalpage('sitesettings', get_string('sitesettings', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/sitesettings.php",
+                'moodle/site:config', true));
+
+        $ADMIN->add('local_hub', new admin_externalpage('hubcoursesettings', get_string('coursesettings', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/coursesettings.php",
+                'moodle/site:config', true));
+
+        $ADMIN->add('local_hub', new admin_externalpage('hubstolensecret', get_string('stolensecret', 'local_hub'),
+                $CFG->wwwroot."/local/hub/admin/stolensecret.php",
+                'moodle/site:config'));
+
+        $ADMIN->add('local_hub', new admin_externalpage('checksiteconnectivity', get_string('checksiteconnectivity', 'local_hub'),
+        "/local/hub/admin/checksiteconnectivity.php",
         'moodle/site:config'));
 
-$ADMIN->add('local_hub', new admin_externalpage('managesites', get_string('managesites', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/managesites.php",
+        $ADMIN->add('local_hub', new admin_externalpage('checkemailsendystatus', get_string('checkemailsendystatus', 'local_hub'),
+        "/local/hub/admin/checksendystatus.php",
         'moodle/site:config'));
-
-$ADMIN->add('local_hub', new admin_externalpage('managecourses', get_string('managecourses', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/managecourses.php",
-        'moodle/site:config'));
-
-$ADMIN->add('local_hub', new admin_externalpage('hubregistration', get_string('registration', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/register.php",
-        'moodle/site:config'));
-
-$ADMIN->add('local_hub', new admin_externalpage('registrationconfirmed',
-        get_string('registrationconfirmed', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/confirmregistration.php",
-        'moodle/site:config', true));
-
-$ADMIN->add('local_hub', new admin_externalpage('sitesettings', get_string('sitesettings', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/sitesettings.php",
-        'moodle/site:config', true));
-
-$ADMIN->add('local_hub', new admin_externalpage('hubcoursesettings', get_string('coursesettings', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/coursesettings.php",
-        'moodle/site:config', true));
-
-$ADMIN->add('local_hub', new admin_externalpage('hubstolensecret', get_string('stolensecret', 'local_hub'),
-        $CFG->wwwroot."/local/hub/admin/stolensecret.php",
-        'moodle/site:config'));
-
-$ADMIN->add('local_hub', new admin_externalpage('checksiteconnectivity', get_string('checksiteconnectivity', 'local_hub'),
-    "/local/hub/admin/checksiteconnectivity.php",
-    'moodle/site:config'));
-
-$ADMIN->add('local_hub', new admin_externalpage('checkemailsendystatus', get_string('checkemailsendystatus', 'local_hub'),
-    "/local/hub/admin/checksendystatus.php",
-    'moodle/site:config'));
-
+}

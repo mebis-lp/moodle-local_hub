@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -23,20 +22,22 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use function PHPUnit\Framework\throwException;
+
 define('HUB_COURSE_PER_PAGE', 10);
 
-//NEVER change this value after installation, otherwise you will need to change all rating in the DB
+// NEVER change this value after installation, otherwise you will need to change all rating in the DB.
 define('HUB_COURSE_RATING_SCALE', 10);
 
 /**
  * Maximum number of course per web service request
  */
-define('HUB_MAXWSCOURSESRESULT', 25);
+define('HUB_MAXWSCOURSESRESULT', 250);
 
 /**
  * Maximum number of course per day default
  */
-define('HUB_MAXCOURSESPERSITEPERDAY', 20);
+define('HUB_MAXCOURSESPERSITEPERDAY', 200);
 
 
 //// HUB IMAGE SIZE
@@ -132,6 +133,8 @@ define('COURSEVISIBILITY_VISIBLE', '1');
 define('COURSEVISIBILITY_NOTVISIBLE', '0');
 
 class local_hub {
+
+    const PREFIX_BACKUPFILE = 'hubbkp_';
 ///////////////////////////
 /// DB Facade functions  //
 ///////////////////////////
@@ -188,7 +191,7 @@ class local_hub {
             $site->prioritise = 0;
             $this->update_site($site);
 
-            add_to_log(SITEID, 'local_hub', 'site unregistration', '', $site->id);
+            // add_to_log(SITEID, 'local_hub', 'site unregistration', '', $site->id);
         }
     }
 
@@ -238,7 +241,7 @@ class local_hub {
      *  outcome['fullname'] => the outcome fullname
      *  TODO outcome['description']
      */
-    public function update_course_outcomes($courseid, $outcomes = array()) {
+    public function update_course_outcomes($courseid, $outcomes = []) {
         global $DB;
 
         //delete previous outcomes
@@ -365,10 +368,19 @@ class local_hub {
      *                          need a second cout_courses() function almost similar to this one.
      * @return array of courses/int
      */
-    public function get_courses($options = array(), $limitfrom=0, $limitnum=0, $countresult = false) {
+    public function get_courses($options = [], $limitfrom=0, $limitnum=0, $countresult = false) {
         global $DB;
+        \local_hub\debug\local_hub_debug::write_to_file($options, 'Params: ');
 
-        $sqlparams = array();
+        $event = \local_hub\event\get_courses_called::create(
+            [
+                'context' => context_system::instance(),
+                'other' => json_encode([$options])
+            ]
+        );
+        $event->trigger();
+
+        $sqlparams = [];
         $wheresql = '';
 
         if (!empty($options['onlyvisible'])) {
@@ -384,12 +396,47 @@ class local_hub {
                 $wheresql .= " AND";
             }
             $wheresql .= " ( " . $DB->sql_like('fullname', ':namesearch', false)
-                    . " OR " . $DB->sql_like('description', ':descsearch', false)
-                    . "  OR " . $DB->sql_like('coverage', ':coveragesearch', false) . " )";
+            . " OR " . $DB->sql_like('description', ':descsearch', false)
+            . " OR " . $DB->sql_like('creatorname', ':creatorsearch', false)
+            . " OR " . $DB->sql_like('coverage', ':coveragesearch', false) . " )";
             $sqlparams['namesearch'] = '%' . $options['search'] . '%';
             $sqlparams['descsearch'] = '%' . $options['search'] . '%';
+            $sqlparams['creatorsearch'] = '%' . $options['search'] . '%';
             $sqlparams['coveragesearch'] = '%' . $options['search'] . '%';
         }
+
+        switch ($options['publishtype']) {
+            case \local_hub\local\search_options::PUBLISH_TYPE_ALL:
+                if (!empty($wheresql)) {
+                    $wheresql .= " AND";
+                }
+                $wheresql .= " (enrollable = :enrollable";
+                $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
+                $wheresql .= ' OR ';
+                $wheresql .= " enrollable = :downloadable )";
+                $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
+                break;
+
+            case \local_hub\local\search_options::PUBLISH_TYPE_DOWNLOADABLE:
+                if (!empty($wheresql)) {
+                    $wheresql .= " AND";
+                }
+                $wheresql .= " enrollable = :downloadable";
+                $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
+                break;
+
+            case \local_hub\local\search_options::PUBLISH_TYPE_ENROLLABLE:
+                if (!empty($wheresql)) {
+                    $wheresql .= " AND";
+                }
+                $wheresql .= " enrollable = :enrollable";
+                $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
+                break;
+        }
+
+        \local_hub\debug\local_hub_debug::write_to_file($wheresql);
+        \local_hub\debug\local_hub_debug::write_to_file($sqlparams);
+
 
         if (!empty($options['language'])) {
             if (!empty($wheresql)) {
@@ -415,27 +462,27 @@ class local_hub {
             $sqlparams['licenceshortname'] = $options['licenceshortname'];
         }
 
-        if (!empty($options['subject'])) {
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
-            //search subject and all sub-subjects
-            $edufields = get_string_manager()->load_component_strings('edufields', 'en');
-            $topsubject = true;
-            foreach ($edufields as $key => $value) {
-                if (strpos($key, $options['subject']) !== false) {
-                    if ($topsubject) {
-                        $wheresql .= " (";
-                        $topsubject = false;
-                    } else {
-                        $wheresql .= " OR";
-                    }
-                    $wheresql .= " subject = :" . $key;
-                    $sqlparams[$key] = $key;
-                }
-            }
-            $wheresql .= ")";
-        }
+        // if (!empty($options['subject'])) {
+        //     if (!empty($wheresql)) {
+        //         $wheresql .= " AND";
+        //     }
+        //     //search subject and all sub-subjects
+        //     $edufields = get_string_manager()->load_component_strings('edufields', 'en');
+        //     $topsubject = true;
+        //     foreach ($edufields as $key => $value) {
+        //         if (strpos($key, $options['subject']) !== false) {
+        //             if ($topsubject) {
+        //                 $wheresql .= " (";
+        //                 $topsubject = false;
+        //             } else {
+        //                 $wheresql .= " OR";
+        //             }
+        //             $wheresql .= " subject = :" . $key;
+        //             $sqlparams[$key] = $key;
+        //         }
+        //     }
+        //     $wheresql .= ")";
+        // }
 
         if (!empty($options['educationallevel'])) {
             if (!empty($wheresql)) {
@@ -460,56 +507,76 @@ class local_hub {
             $sqlparams['visibility'] = $privacy;
         }
 
+        // if ($options['downloadable']) {
+        //     if (!empty($wheresql)) {
+        //         $wheresql .= " AND";
+        //     }
+        //     if (!empty($options['downloadable'])) {
+        //         $wheresql .= " downloadurl != ''";
+        //     }
+        // }
+
+        // if (!empty($wheresql)) {
+        //     $wheresql .= " AND";
+        // }
+        // if ($options['enrolable']) {
+        //     $wheresql .= " enrolable = :enrolable";
+        //     $sqlparams['enrolable'] = $options['enrolable'];
+        // } else {
+        //     $wheresql .= " downloadurl != ''";
+        // }
+
         if (!empty($options['ids'])) {
             if (!empty($wheresql)) {
                 $wheresql .= " AND";
             }
-            $idlist = '(';
-            foreach ($options['ids'] as $id) {
-                if ($idlist == '(') {
-                    $idlist .= $id;
-                } else {
-                    $idlist .= ',' . $id;
-                }
-            }
-            $idlist .= ')';
-            $wheresql .= " id IN " . $idlist;
+            $idlist = '(' . join(',', $options['ids']) . ')';
+            // foreach ($options['ids'] as $id) {
+            //     if ($idlist == '(') {
+            //         $idlist .= $id;
+            //     } else {
+            //         $idlist .= ',' . $id;
+            //     }
+            // }
+            // $idlist .= ')';
+            $wheresql .= " c.id IN " . $idlist;
+            $wheresqlcnt = " id IN " . $idlist;
         }
 
         if (!empty($options['sitecourseids'])) {
             if (!empty($wheresql)) {
                 $wheresql .= " AND";
             }
-            $idlist = '(';
-            foreach ($options['sitecourseids'] as $sitecourseid) {
-                if ($idlist == '(') {
-                    $idlist .= $sitecourseid;
-                } else {
-                    $idlist .= ',' . $sitecourseid;
-                }
-            }
-            $idlist .= ')';
-            $wheresql .= " sitecourseid IN " . $idlist;
+            $idlist = '(' . join(',', $options['sitecourseids']) . ')';
+            // foreach ($options['sitecourseids'] as $sitecourseid) {
+            //     if ($idlist == '(') {
+            //         $idlist .= $sitecourseid;
+            //     } else {
+            //         $idlist .= ',' . $sitecourseid;
+            //     }
+            // }
+            // $idlist .= ')';
+            $wheresql .= " c.sitecourseid IN " . $idlist;
         }
 
         //check that one of the downloadable/enrollable option is false (otherwise display both kind of course)
-        if (!((key_exists('downloadable', $options) and $options['downloadable'])
-                and
-                (key_exists('enrollable', $options) and $options['enrollable']))) {
+        // if (!((key_exists('downloadable', $options) and $options['downloadable'])
+        //         and
+        //         (key_exists('enrollable', $options) and $options['enrollable']))) {
 
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
+        //     if (!empty($wheresql)) {
+        //         $wheresql .= " AND";
+        //     }
 
-            if (key_exists('downloadable', $options) and $options['downloadable']) {
-                $wheresql .= " enrollable = 0";
-            } else if (key_exists('enrollable', $options) and $options['enrollable']) {
-                $wheresql .= " enrollable = 1";
-            } else { //this case means that we are searching course as downloadable == 0 and enrollable == 0
-                $wheresql .= " enrollable = 4"; //=> return nothing,
-                //it should never be ask to return a course not enrollable AND not downloadable
-            }
-        }
+        //     if (key_exists('downloadable', $options) and $options['downloadable']) {
+        //         $wheresql .= " enrollable = 0";
+        //     } else if (key_exists('enrollable', $options) and $options['enrollable']) {
+        //         $wheresql .= " enrollable = 1";
+        //     } else { //this case means that we are searching course as downloadable == 0 and enrollable == 0
+        //         $wheresql .= " enrollable = 4"; //=> return nothing,
+        //         //it should never be ask to return a course not enrollable AND not downloadable
+        //     }
+        // }
 
         if (!empty($options['siteid'])) {
             if (!empty($wheresql)) {
@@ -545,6 +612,7 @@ class local_hub {
         }
 
         if ($countresult) {
+            $wheresql = str_replace("c.", "", $wheresql);
             $courses = $DB->count_records_select('hub_course_directory', $wheresql, $sqlparams);
         } else {
 
@@ -554,15 +622,23 @@ class local_hub {
                                     SELECT itemid, AVG(rating) AS ratingaverage, COUNT(id) AS ratingcount
                                     FROM {rating} GROUP BY itemid
                                   ) r ON r.itemid = c.id ';
-
-            //sort result
+                                  
+            // Sort result.
             $ordersql = '';
             if (!empty($options['orderby'])) {
-                $ordersql = ' ORDER BY ' . $options['orderby'];
+                $sortoptions = \local_hub\local\search_options::get_sort_options();
+                foreach ($sortoptions as $sortoption) {
+                    if ($sortoption['value'] == $options['orderby']) {
+                        $ordersql = ' ORDER BY c.' . $sortoption['col'] . ' ' . $sortoption['direction'];
+                    }
+                }
             }
 
             $sql = 'SELECT c.* ' . $extracolumns . 'FROM {hub_course_directory} c ' . $joinsql . ' WHERE '
                     . $wheresql . $ordersql;
+
+            \local_hub\debug\local_hub_debug::write_to_file($options);
+            // \local_hub\debug\local_hub_debug::write_to_file($sql);
 
             $courses = $DB->get_records_sql($sql, $sqlparams, $limitfrom, $limitnum);
         }
@@ -601,10 +677,10 @@ class local_hub {
      *              deleted - boolean - return deleted and not deleted sites
      * @return array of sites
      */
-    public function get_sites($options = array(), $limitfrom=0, $limitnum=0, $countresult = false) {
+    public function get_sites($options = [], $limitfrom=0, $limitnum=0, $countresult = false) {
         global $DB;
 
-        $sqlparams = array();
+        $sqlparams = [];
         $wheresql = '';
 
         if (key_exists('onlyvisible', $options) and !empty($options['onlyvisible'])) {
@@ -915,7 +991,7 @@ class local_hub {
      */
     public function get_info() {
         global $CFG;
-        $hubinfo = array();
+        $hubinfo = [];
         $hubinfo['name'] = get_config('local_hub', 'name');
         $hubinfo['description'] = get_config('local_hub', 'description');
         $hubinfo['contactname'] = get_config('local_hub', 'contactname');
@@ -928,7 +1004,7 @@ class local_hub {
         $hubinfo['courses'] = $this->get_registered_courses_total();
 
         //enrollable course total
-        $options = array();
+        $options = [];
         $options['onlyvisible'] = true;
         $options['downloadable'] = false;
         $options['enrollable'] = true;
@@ -991,7 +1067,7 @@ class local_hub {
             //delete outcomes
             $this->update_course_outcomes($courseid, null);
 
-            add_to_log(SITEID, 'local_hub', 'course unregistration', '', $course->id);
+            // add_to_log(SITEID, 'local_hub', 'course unregistration', '', $course->id);
         }
     }
 
@@ -999,9 +1075,9 @@ class local_hub {
      * Register a course for a specific site
      * @param object $course
      * @param string $siteurl
-     * @return int course id
+     * @return int courseregid: id in hub_course_directory
      */
-    public function register_course($course, $siteurl) {
+    public function register_course($siteid, $course, $siteurl) {
         global $CFG;
 
         //$siteinfo must be an object
@@ -1023,6 +1099,9 @@ class local_hub {
             $course->format = 'mbz';
         } else {
             $course->format = 'url';
+
+            // TODO: Make an own column in course_directory table.
+            $course->coverage = $course->ltitool;
         }
 
         if ($site->trusted) {
@@ -1036,15 +1115,15 @@ class local_hub {
         $existingenrollablecourse = $this->get_enrollable_course_by_site($course->siteid, $course->sitecourseid);
         if (!empty($existingenrollablecourse) and $course->enrollable) {
             $course->id = $existingenrollablecourse->id;
-            $courseid = $existingenrollablecourse->id;
+            $courseregid = $existingenrollablecourse->id;
             $this->update_course($course);
-            add_to_log(SITEID, 'local_hub', 'course update', '', $courseid);
-
+            // add_to_log(SITEID, 'local_hub', 'course update', '', $courseid);
             //delete previous course content
-            $this->delete_course_contents($courseid);
+            $this->delete_course_contents($courseregid);
         } else {
-            $courseid = $this->add_course($course);
-            add_to_log(SITEID, 'local_hub', 'course registration', '', $courseid);
+
+            $courseregid = $this->add_course($course);
+            // add_to_log(SITEID, 'local_hub', 'course registration', '', $courseregid);
         }
 
         //update outcomes
@@ -1052,44 +1131,77 @@ class local_hub {
         if (!isset($course->outcomes)) {
             $course->outcomes = null;
         }
-        $this->update_course_outcomes($courseid, $course->outcomes);
+        $this->update_course_outcomes($courseregid, $course->outcomes);
 
-
+        // +++ MBS-HACK (Peter Mayer)
         //update course tag
-        $tags = array();
-        if (!empty($course->coverage)) {
-            $tags = explode(',', $course->coverage);
-        }
-        require_once($CFG->dirroot . '/tag/lib.php');
-        tag_set('hub_course_directory', $courseid, $tags);
-
+        // $tags = [];
+        // if (!empty($course->coverage)) {
+        //     $tags = explode(',', $course->coverage);
+        // }
+        // require_once($CFG->dirroot . '/tag/lib.php');
+        // tag_set('hub_course_directory', $courseid, $tags);
+        // $cctx = context_course::instance_by_id($courseid);
+        // core_tag_tag::set_item_tags('local_hub', 'hub_course_directory', $courseid, $cctx, $tags);
+        // --- MBS-HACK (Peter Mayer)
         //add new course contents
         if (!empty($course->contents)) {
             foreach ($course->contents as $content) {
-                $content['courseid'] = $courseid;
+                $content['courseid'] = $courseregid;
                 $this->add_course_content($content);
             }
         }
 
-        //delete all screenshots if required
+        // Delete all screenshots if required
         if (!empty($course->deletescreenshots)) {
-
-            $level1 = floor($courseid / 1000) * 1000;
-
-            $userdir = "hub/$level1/$courseid";
+            $courseid = $course->sitecourseid;
+            
+            $diroptions = new stdClass();
+            $diroptions->siteid = $siteid;
+            $diroptions->courseid = $courseid;
+            $userdir = $this->get_backup_directory($diroptions);
 
             $directory = make_upload_directory($userdir);
 
             for ($screenshotnumber = 1; $screenshotnumber <= MAXSCREENSHOTSNUMBER; $screenshotnumber = $screenshotnumber + 1) {
 
                 //delete all existing screenshot
-                if ($this->screenshot_exists($courseid, $screenshotnumber)) {
+                if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
                     unlink($directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
                 }
             }
         }
+        return $courseregid;
+    }
 
-        return $courseid;
+    /**
+     * Get the directory, where backups will be stored.
+     * @return string
+     */
+    public function get_backup_directory() {
+        if($backuplocalpath = get_config('local_hub', 'backuplocalpath')) {
+            return  $backuplocalpath . '/backup';
+        }
+        throw new moodle_exception('error_localbackuppath_not_setup', 'hub');
+    }
+
+    /**
+     * Get backups filename.
+     * @param int $hubcourseid
+     * @return string
+     */
+    public function get_backup_filename($hubcourseid) {
+        return self::PREFIX_BACKUPFILE . $hubcourseid . '_' . time() . '.mbz';
+    }
+
+    /**
+     * Checks if a directory is empty.
+     * @param string $dir absolute path of the directory.
+     * @return bool.
+     */
+    public function is_dir_empty($dir) {
+        if (!is_readable($dir)) return null;
+        return (count(scandir($dir)) == 2);
     }
 
     /**
@@ -1245,7 +1357,7 @@ class local_hub {
         if (!empty($siteurltoupdate)) {
             //we just log, do not send an email to admin for update
             //(an email was sent previously if the url or name changed)
-            add_to_log(SITEID, 'local_hub', 'site update', '', $siteinfo->id);
+            // add_to_log(SITEID, 'local_hub', 'site update', '', $siteinfo->id);
         } else {
             // Send email to the hub administrator.
 
@@ -1265,7 +1377,7 @@ class local_hub {
             email_to_user(get_admin(), core_user::get_support_user(),
                     get_string('emailtitlesiteadded', 'local_hub', $emailinfo->name),
                     get_string('emailmessagesiteadded', 'local_hub', $emailinfo));
-            add_to_log(SITEID, 'local_hub', 'site registration', '', $site->id);
+            // add_to_log(SITEID, 'local_hub', 'site registration', '', $site->id);
         }
 
         return $sitetohubcommunication->token;
@@ -1503,15 +1615,11 @@ class local_hub {
      * @param array $file - $file['tmp_name'] should be the filename
      * @param integer $courseid
      */
-    public function add_screenshot($file, $courseid, $screenshotnumber) {
+    public function add_screenshot($file, $siteid, $courseid, $screenshotnumber) {
+        global $CFG;
 
-        // Generate a two-level path for the userid. First level groups them by slices of 1000 users,
-        // second level is userid
-        $level1 = floor($courseid / 1000) * 1000;
-
-        $userdir = "hub/$level1/$courseid";
-
-        $directory = make_upload_directory($userdir);
+        $dir = $this->get_backup_directory();
+        $directory = make_upload_directory($dir);
 
         //get the extension of this image in order to check that it is an image
         $imageext = image_type_to_extension(exif_imagetype($file['tmp_name']));
@@ -1519,12 +1627,11 @@ class local_hub {
         if (!empty($imageext) and $screenshotnumber < MAXSCREENSHOTSNUMBER) {
 
             //delete previously existing screenshot
-            if ($this->screenshot_exists($courseid, $screenshotnumber)) {
-                unlink($directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
+            if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
+                unlink($CFG->dataroot . "/" .$directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
             }
 
-            move_uploaded_file($file['tmp_name'],
-                    $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
+            move_uploaded_file($file['tmp_name'], $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
         }
     }
 
@@ -1533,10 +1640,9 @@ class local_hub {
      * @param int $courseid
      * @param int $screenshotnumber
      */
-    public function delete_screenshot($courseid, $screenshotnumber) {
+    public function delete_screenshot($siteid, $courseid, $screenshotnumber) {
         global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
-        $directory = "hub/$level1/$courseid";
+        $directory = $this->get_backup_directory();
         $filepath = $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber;
         unlink($filepath);
     }
@@ -1548,11 +1654,9 @@ class local_hub {
      * @param int $screenshotnumber
      * @return bool
      */
-    public function screenshot_exists($courseid, $screenshotnumber) {
+    public function screenshot_exists($siteid, $courseid, $screenshotnumber) {
         global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
-
-        $directory = "hub/$level1/$courseid";
+        $directory = $this->get_backup_directory();
         return file_exists($CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
     }
 
@@ -1563,14 +1667,13 @@ class local_hub {
      * @param int $courseid
      * @return $newscreenshotnumber int the new screenshot total
      */
-    public function sanitize_screenshots($courseid) {
+    public function sanitize_screenshots($siteid, $courseid) {
         global $CFG, $DB;
-        $level1 = floor($courseid / 1000) * 1000;
-        $directory = "hub/$level1/$courseid";
+        $directory = $this->get_backup_directory();
 
-        $existingscreenshots = array();
+        $existingscreenshots = [];
         for ($screenshotnumber = 1; $screenshotnumber <= MAXSCREENSHOTSNUMBER; $screenshotnumber++) {
-            if ($this->screenshot_exists($courseid, $screenshotnumber)) {
+            if ($this->screenshot_exists($siteid, $courseid, $screenshotnumber)) {
                 $existingscreenshots[] = $screenshotnumber;
             }
         }
@@ -1580,16 +1683,14 @@ class local_hub {
         foreach ($existingscreenshots as $screenshotnumber) {
             $newscreenshotnumber++;
             $filepath = $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber;
-            copy($filepath,
-                    $CFG->dataroot . '/' . $directory . '/tmp_screenshot_' . $courseid . "_" . $newscreenshotnumber);
+            copy($filepath, $CFG->dataroot . '/' . $directory . '/tmp_screenshot_' . $courseid . "_" . $newscreenshotnumber);
             unlink($filepath);
         }
 
         //rename the tmp screenshot into real screenshot
         for ($screenshotnumber = 1; $screenshotnumber <= $newscreenshotnumber; $screenshotnumber++) {
             $filepath = $CFG->dataroot . '/' . $directory . '/tmp_screenshot_' . $courseid . "_" . $screenshotnumber;
-            copy($filepath,
-                    $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
+            copy($filepath, $CFG->dataroot . '/' . $directory . '/screenshot_' . $courseid . "_" . $screenshotnumber);
             unlink($filepath);
         }
 
@@ -1606,45 +1707,39 @@ class local_hub {
      * TODO: this is temporary till the way to send file by ws is defined
      * Add a backup to a course
      * @param array $file
-     * @param integer $courseid
+     * @param object $hubcourse
      */
-    public function add_backup($file, $courseid) {
+    public function add_backup($file, $hubcourse) {
+        global $DB, $CFG;
 
-        // Generate a two-level path for the userid. First level groups them by slices of 1000 users,
-        //  second level is userid
-        $level1 = floor($courseid / 1000) * 1000;
-
-        $userdir = "hub/$level1/$courseid";
+        $userdir = $this->get_backup_directory();
 
         $directory = make_upload_directory($userdir);
+        $backupfilename = $this->get_backup_filename($hubcourse->id);
 
-        move_uploaded_file($file['tmp_name'], $directory . '/backup_' . $courseid . ".mbz");
+        move_uploaded_file($file['tmp_name'], $directory . '/' . $backupfilename);
+
+        $DB->set_field('hub_course_directory', 'backupfilepath', $directory . '/' . $backupfilename, ['id' => $hubcourse->id]);
     }
 
     /**
      * TODO: temporary function till file download design done  (course unique ref not used)
      * Check a backup exists
-     * @param int $courseid
+     * @param object $hubcourse
+     * @return bool
      */
-    public function backup_exits($courseid) {
-        global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
-
-        $directory = "hub/$level1/$courseid";
-        return file_exists($CFG->dataroot . '/' . $directory . '/backup_' . $courseid . ".mbz");
+    public function backup_exits($hubcourse) {
+        return file_exists($hubcourse->backupfilepath);
     }
 
     /**
      * TODO: temporary function till file download design done  (course unique ref not used)
      * Return backup size
-     * @param int $courseid
+     * @param object $hubcourse
      * @return int
      */
-    public function get_backup_size($courseid) {
-        global $CFG;
-        $level1 = floor($courseid / 1000) * 1000;
-        $directory = "hub/$level1/$courseid";
-        return filesize($CFG->dataroot . '/' . $directory . '/backup_' . $courseid . ".mbz");
+    public function get_backup_size($hubcourse) {
+        return filesize($hubcourse->backupfilepath);
     }
 
     /**
@@ -1746,7 +1841,7 @@ class local_hub {
 
             $rss = optional_param('rss', false, PARAM_BOOL);
             $rss = empty($rss) ? '' : 'rss';
-            add_to_log(SITEID, 'local_hub', 'course redirection ' . $rss, '', $redirectcourseid);
+            // add_to_log(SITEID, 'local_hub', 'course redirection ' . $rss, '', $redirectcourseid);
             redirect(new moodle_url($courseurl));
         }
 
@@ -1777,9 +1872,9 @@ class local_hub {
         $fromform = (object) $fromformdata;
 
         //Retrieve courses by web service
-        $options = array();
+        $options = [];
         //special shortcut if a course id is given in param, we search straight forward this id
-        if ($courseid = optional_param('courseid', 0, PARAM_INTEGER)) {
+        if ($courseid = optional_param('courseid', 0, PARAM_INT)) {
             $options['onlyvisible'] = true;
             $options['ids'] = array($courseid);
             $options['downloadable'] = true;
@@ -1793,7 +1888,7 @@ class local_hub {
             }
         } else {
             if (!empty($fromform) and optional_param('submitbutton', 0, PARAM_ALPHANUMEXT)) {
-                $downloadable = optional_param('downloadable', false, PARAM_INTEGER);
+                $downloadable = optional_param('downloadable', false, PARAM_INT);
 
                 if (!empty($fromform->coverage)) {
                     $options['coverage'] = $fromform->coverage;
@@ -1853,8 +1948,8 @@ class local_hub {
         if (!empty($courses)) {
 
             //load javascript
-            $courseids = array(); //all result courses
-            $courseimagenumbers = array(); //number of screenshots of all courses (must be exact same order than $courseids)
+            $courseids = []; //all result courses
+            $courseimagenumbers = []; //number of screenshots of all courses (must be exact same order than $courseids)
             foreach ($courses as $course) {
                 $courseids[] = $course->id;
                 $courseimagenumbers[] = $course->screenshots;
@@ -1945,7 +2040,7 @@ class local_hub {
         echo $OUTPUT->header();
 
         //notification message sent to publisher
-        if (optional_param('messagesent', 0, PARAM_INTEGER)) {
+        if (optional_param('messagesent', 0, PARAM_INT)) {
             echo $OUTPUT->notification(get_string('messagesentsuccess', 'local_hub'), 'notifysuccess');
         }
 
@@ -1992,7 +2087,7 @@ class local_hub {
 
         //permalink
         if (!empty($courses)) {
-            $permalinkparams = array();
+            $permalinkparams = [];
             //special case: course list is a unique course for a given ID
             if (!empty($courseid)) {
                 $permalinkparams['courseid'] = $courseid;
@@ -2173,12 +2268,12 @@ function update_sendy_list_batch($sites, $chunksize=150) {
          $sendyapikey = $CFG->sendyapikey;
     }
 
-    if (empty($sendyurl) || empty($sendylistid) || empty($sendyapikey)) {
-        print_error('mailinglistnotconfigured', 'local_hub');
-    }
+    // if (empty($sendyurl) || empty($sendylistid) || empty($sendyapikey)) {
+    //     print_error('mailinglistnotconfigured', 'local_hub');
+    // }
 
-    $subscribers = array();
-    $unsubscribers = array();
+    $subscribers = [];
+    $unsubscribers = [];
     foreach ($sites as $site) {
         if (empty($site->contactemail)) {
             continue;
@@ -2199,14 +2294,14 @@ function update_sendy_list_batch($sites, $chunksize=150) {
     // Loop through $subscribers.
     // For each subscriber, check their subscription status.
     // If the email address is not known to the list server, subscribe them.
-    debugging('Subscribing '. count($subscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
+    // debugging('Subscribing '. count($subscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
     $chunks = array_chunk($subscribers, $chunksize);
     $resturl = '/subscribe';
     process_sendy_chunks($chunks, $sendyurl, $resturl, $sendylistid, $sendyapikey, array('1', 'true', 'Already subscribed.'));
 
     // Loop through $unsubscribers and unsubscribe them.
     // The state on list server doesn't matter, just unsubscribe.
-    debugging('Unsubscribing '. count($unsubscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
+    // debugging('Unsubscribing '. count($unsubscribers). ' users in chunks of '. $chunksize, DEBUG_DEVELOPER);
     $chunks = array_chunk($unsubscribers, $chunksize);
     $resturl = '/unsubscribe';
     process_sendy_chunks($chunks, $sendyurl, $resturl, $sendylistid, $sendyapikey, array('1', 'true'));
@@ -2215,7 +2310,7 @@ function update_sendy_list_batch($sites, $chunksize=150) {
 function process_sendy_chunks($chunks, $sendyurl, $resturl, $sendylistid, $sendyapikey, $correctresults) {
     foreach ($chunks as $chunk) {
         $curl = new curly;
-        $requests = array();
+        $requests = [];
         foreach ($chunk as $site) {
             if ($resturl == '/subscribe') {
                 // Need to check the email address' status before subscribing.

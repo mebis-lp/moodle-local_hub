@@ -14,9 +14,21 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->component  = 'local_hub';
-$plugin->release    = '3.3.0';
-$plugin->version    = 2017052416;
-$plugin->requires   = 2017051500;
-$plugin->maturity   = MATURITY_STABLE;
-$plugin->cron       = 0;
+/**
+ * Event Observers for local_hub
+ *
+ * @package   local_hub
+ * @copyright 2022 ISB Bayern
+ * @author    Peter Mayer
+ * @license   http://www.gnu.org/copyeft/gpl.html GNU GPL v3 or later
+ */
+defined('MOODLE_INTERNAL') || die();
+
+$observers = [
+    [
+        'eventname' => '\local_hub\event\backup_uploaded',
+        'callback' => '\local_hub\local\local_hub_helper::callback_make_demo_course',
+        'includefile' => '/local/hub/classes/local/local_hub_helper.php',
+        'internal' => true
+    ],
+];

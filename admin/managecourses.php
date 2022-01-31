@@ -28,6 +28,7 @@ require('../../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->dirroot . '/local/hub/lib.php');
 require_once($CFG->dirroot . "/local/hub/forms.php");
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/customhub/constants.php');
 
 admin_externalpage_setup('managecourses');
 
@@ -46,11 +47,11 @@ $renderer = $PAGE->get_renderer('local_hub');
 
 /// BULK OPERATIONS
 $bulkoperation = optional_param('bulkselect', false, PARAM_ALPHANUM);
-$confirm = optional_param('confirm', false, PARAM_INTEGER);
+$confirm = optional_param('confirm', false, PARAM_INT);
 if (!empty($bulkoperation) and confirm_sesskey()) {
     //retrieve all ids
     for ($i = 1; $i <= HUB_COURSE_PER_PAGE; $i = $i + 1) {
-        $selectedcourseid = optional_param('bulk-' . $i, false, PARAM_INTEGER);
+        $selectedcourseid = optional_param('bulk-' . $i, false, PARAM_INT);
         if (!empty($selectedcourseid)) {
             $bulkcourses[] = $hub->get_course($selectedcourseid);
         }
@@ -80,7 +81,7 @@ if (!empty($bulkoperation) and confirm_sesskey()) {
 
 /// VISIBLE OPERATION
 $courseid = optional_param('courseid', null, PARAM_INT);
-$visible = optional_param('visible', -1, PARAM_INTEGER);
+$visible = optional_param('visible', -1, PARAM_INT);
 if ($visible != -1 and confirm_sesskey()) {
     $course = $hub->get_course($courseid);
     if (!empty($course)) {

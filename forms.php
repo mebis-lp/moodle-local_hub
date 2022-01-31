@@ -146,7 +146,7 @@ class course_search_form extends moodleform {
         if (isset($this->_customdata['visibility'])) {
             $visibility = $this->_customdata['visibility'];
         } else {
-            $visibility = COURSEVISIBILITY_NOTVISIBLE;
+            $visibility = COURSEVISIBILITY_ALL;
         }
         if (isset($this->_customdata['downloadable'])) {
             $downloadable = $this->_customdata['downloadable'];
@@ -229,8 +229,7 @@ class course_search_form extends moodleform {
         unset($options);
         $mform->addHelpButton('educationallevel', 'educationallevel', 'local_hub');
 
-        require_once($CFG->dirroot . "/course/publish/lib.php");
-        $publicationmanager = new course_publish_manager();
+        $publicationmanager = new \tool_customhub\course_publish_manager();
         $options = $publicationmanager->get_sorted_subjects();
         foreach ($options as $key => &$option) {
             $keylength = strlen($key);
@@ -252,7 +251,9 @@ class course_search_form extends moodleform {
         $options = array();
         $options['all'] = get_string('any');
         foreach ($licences as $license) {
-            $options[$license->shortname] = get_string($license->shortname, 'license');
+            // +++ MBS-Hack (Peter Mayer)
+            $options[$license->shortname] = $license->shortname; //get_string($license->shortname, 'license');
+            // --- MBS-Hack (Peter Mayer)
         }
         $mform->addElement('select', 'licence', get_string('license'), $options);
         unset($options);

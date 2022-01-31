@@ -14,9 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$plugin->component  = 'local_hub';
-$plugin->release    = '3.3.0';
-$plugin->version    = 2017052416;
-$plugin->requires   = 2017051500;
-$plugin->maturity   = MATURITY_STABLE;
-$plugin->cron       = 0;
+/**
+ * local_hub upgrade related helper functions
+ *
+ * @package    local_hub
+ * @copyright  2022 ISB Bayern
+ * @author     Peter Mayer <peter.mayer@isb.bayern.de>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die;
+
+function set_default_tag_options() {
+    local_hub\local\tag_options::create_tag_defaultoptions();
+}

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-//this is a temporary file to manage download till file download design is done (most probably ws)
+// this is a temporary file to manage download till file download design is done (most probably ws)
 
 /**
  * This page display content of a course backup (if public only)
@@ -24,11 +23,12 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require('../../../config.php');
-require_once($CFG->dirroot . '/course/publish/lib.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
+// require_once($CFG->dirroot . '/admin/tool/customhub/classes/course_publish_manager.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->dirroot . '/local/hub/lib.php'); //HUBLOGOIMAGEWIDTH, HUBLOGOIMAGEHEIGHT
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/customhub/constants.php');
 
-$courseid = optional_param('courseid', '', PARAM_INTEGER);
+$courseid = optional_param('courseid', '', PARAM_INT);
 $filetype = optional_param('filetype', '', PARAM_ALPHA); //can be screenshots, backup, ...
 $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the screenshot number of this course
 $imagewidth = optional_param('imagewidth', HUBLOGOIMAGEWIDTH, PARAM_ALPHANUM); //the screenshot width, can be set to 'original' to forcce original size
@@ -39,33 +39,44 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
     switch ($filetype) {
 
         case HUB_BACKUP_FILE_TYPE:
-            //check that the file is downloadable / set as visible
-            $course = $DB->get_record('hub_course_directory', array('id' => $courseid));
-            if (!empty($course) &&
-                    ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
+            // Check that the file is downloadable / set as visible
+            $hubcourse = $DB->get_record('hub_course_directory', ['id' => $courseid]);
+            if (!empty($hubcourse) && ($hubcourse->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
+                // fwrite($fo, "\nFile is downloadable");
 
-                //if the hub is set as PRIVATE, allow the download
-                //either if the download is requested by a logged in user,
-                //either if the download is requested by a site (server side request)
+                // If the hub is set as PRIVATE, allow the download
+                // either if the download is requested by a logged in user,
+                // either if the download is requested by a site (server side request).
                 $hubprivacy = get_config('local_hub', 'privacy');
+
                 $token = optional_param('token', '', PARAM_ALPHANUM);
-                if (!empty($token)) {
-                    // check the communication token
-                    $hub = new local_hub();
-                    $communication = $hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token);
-                }
-                if ($hubprivacy != HUBPRIVATE or isloggedin() or !empty($communication)) {
-                    $level1 = floor($courseid / 1000) * 1000;
-                    $userdir = "hub/$level1/$courseid";
+
+                // if (!empty($token)) {
+                //     // Check the communication token.
+                //     $hub = new local_hub();
+                //     $communication = $hub->get_communication(WSSERVER, REGISTEREDSITE, '', $token);
+                // }
+                if ($hubprivacy != HUBPRIVATE ) { //or isloggedin() or !empty($communication)) {
+                    // $userdir = "hub/" . $course->siteid . "/" . $course->sitecourseid;
                     $remotemoodleurl = optional_param('remotemoodleurl', '', PARAM_URL);
                     if (!empty($remotemoodleurl)) {
                         $remotemoodleurl = ',' . $remotemoodleurl . ',' . getremoteaddr();
                     } else {
                         $remotemoodleurl = ',' . 'unknown' . ',' . getremoteaddr();
                     }
-                    add_to_log(SITEID, 'local_hub', 'download backup', '', $courseid . $remotemoodleurl);
-                    send_file($CFG->dataroot . '/' . $userdir . '/backup_' . $courseid . ".mbz", $course->shortname . ".mbz",
-                            'default', 0, false, true, '', false);
+
+                    // add_to_log(SITEID, 'local_hub', 'download backup', '', $courseid . $remotemoodleurl);
+                    send_file(
+                        $hubcourse->backupfilepath,
+                        // $CFG->dataroot . '/' . $userdir . '/backup_' . $hubcourse->sitecourseid . ".mbz",
+                        $hubcourse->shortname . ".mbz",
+                        'default',
+                        0,
+                        false,
+                        true,
+                        '',
+                        false
+                    );
                 }
             }
             break;
@@ -76,8 +87,7 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
             if (!empty($course) &&
                     ($course->privacy or (!empty($USER) and is_siteadmin($USER->id)))) {
 
-                $level1 = floor($courseid / 1000) * 1000;
-                $userdir = "hub/$level1/$courseid";
+                $userdir = "hub/" . $course->siteid . "/$courseid";
                 $filepath = $CFG->dataroot . '/' . $userdir . '/screenshot_' . $courseid . "_" . $screenshotnumber;
                 $imageinfo = getimagesize($filepath, $info);
 
@@ -142,4 +152,3 @@ if (!empty($courseid) and !empty($filetype) and get_config('local_hub', 'hubenab
         send_file($newfilepath, 'image', 'default', 0, false, true, $imageinfo['mime'], false);
     }
 }
-

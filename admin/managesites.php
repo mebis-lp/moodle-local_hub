@@ -47,8 +47,8 @@ if (!extension_loaded('xmlrpc')) {
 $hub = new local_hub();
 
 /// Check if the page has been called with trust argument
-$delete = optional_param('delete', -1, PARAM_INTEGER);
-$confirm = optional_param('confirm', false, PARAM_INTEGER);
+$delete = optional_param('delete', -1, PARAM_INT);
+$confirm = optional_param('confirm', false, PARAM_INT);
 if ($delete != -1 and $confirm and confirm_sesskey()) {
     $unregistercourses = optional_param('unregistercourses', false, PARAM_BOOL);
     $hub->delete_site($delete, $unregistercourses);
@@ -56,9 +56,9 @@ if ($delete != -1 and $confirm and confirm_sesskey()) {
 
 
 /// Check if the page has been called with trust argument
-$trust = optional_param('trust', -1, PARAM_INTEGER);
+$trust = optional_param('trust', -1, PARAM_INT);
 if ($trust != -1 and confirm_sesskey()) {
-    $id = required_param('id', PARAM_INTEGER);
+    $id = required_param('id', PARAM_INT);
     $site = $hub->get_site($id);
     if (!empty($site)) {
         $site->trusted = $trust;
@@ -78,7 +78,7 @@ if ($delete != -1 and !$confirm) { //we want to display delete confirmation page
     $sitesearchform = new site_search_form('', array('search' => $search, 'adminform' => 1));
     $fromform = $sitesearchform->get_data();
 
-    $limitfrom = optional_param('limitfrom', 0, PARAM_INTEGER);
+    $limitfrom = optional_param('limitfrom', 0, PARAM_INT);
 
     //if the page result from any action from the renderer, set data to the previous search in order to
     //display the same result

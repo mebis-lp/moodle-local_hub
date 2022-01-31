@@ -19,6 +19,8 @@
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+require_once($CFG->dirroot . "/local/hub/db/upgradelib.php");
+
 /**
  * Upgrade code for the hub plugin
  * @package   localhub
@@ -593,6 +595,77 @@ function xmldb_local_hub_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2016071400, 'local', 'hub');
+    }
+
+    if ($oldversion < 2017052404) {
+
+        // Define field backupfilepath to be added to hub_course_directory.
+        $table = new xmldb_table('hub_course_directory');
+        $field = new xmldb_field('backupfilepath', XMLDB_TYPE_TEXT, null, null, null, null, null, 'demourl');
+
+        // Conditionally launch add field backupfilepath.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Hub savepoint reached.
+        upgrade_plugin_savepoint(true, 2017052404, 'local', 'hub');
+    }
+
+    if ($oldversion < 2017052410) {
+
+        // Define table hub_tag to be created.
+        $table = new xmldb_table('hub_tag');
+
+        // Adding fields to table hub_tag.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('hubcourseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('optionid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table hub_tag.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table hub_tag.
+        $table->add_index('idx-tplid-optionid', XMLDB_INDEX_NOTUNIQUE, ['hubcourseid', 'optionid']);
+        $table->add_index('idx-optionid', XMLDB_INDEX_NOTUNIQUE, ['optionid']);
+        $table->add_index('idx-tplid', XMLDB_INDEX_NOTUNIQUE, ['hubcourseid']);
+
+        // Conditionally launch create table for hub_tag.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Define table hub_tag_options to be created.
+        $table = new xmldb_table('hub_tag_options');
+
+        // Adding fields to table hub_tag_options.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('tagtype', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('value', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table hub_tag_options.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Adding indexes to table hub_tag_options.
+        $table->add_index('idx-tagtype', XMLDB_INDEX_NOTUNIQUE, ['tagtype']);
+        $table->add_index('idx-tagtype-id', XMLDB_INDEX_NOTUNIQUE, ['id', 'tagtype']);
+
+        // Conditionally launch create table for hub_tag_options.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        set_default_tag_options();
+        // Hub savepoint reached.
+        upgrade_plugin_savepoint(true, 2017052410, 'local', 'hub');
+    }
+
+    if ($oldversion < 2017052411) {
+
+        set_default_tag_options();
+
+        // Hub savepoint reached.
+        upgrade_plugin_savepoint(true, 2017052411, 'local', 'hub');
     }
 
     return true;

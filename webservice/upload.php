@@ -26,13 +26,13 @@
  */
 require('../../../config.php');
 require_once($CFG->dirroot . '/local/hub/lib.php');
-require_once($CFG->dirroot . '/course/publish/lib.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
-
+require_once($CFG->dirroot . '/' . $CFG->admin . '/tool/customhub/constants.php');
+// require_once($CFG->dirroot . '/admin/tool/customhub/classes/course_publish_manager.php'); //HUB_SCREENSHOT_FILE_TYPE and HUB_BACKUP_FILE_TYPE
 
 $token = optional_param('token', '', PARAM_ALPHANUM);
 $filetype = optional_param('filetype', '', PARAM_ALPHA); //can be screenshots, backup, ...
 $screenshotnumber = optional_param('screenshotnumber', 1, PARAM_INT); //the screenshot number of this course
-$courseid = optional_param('courseid', '', PARAM_ALPHANUM);
+$hubcourseid = optional_param('courseid', '', PARAM_ALPHANUM); // Get the id from hub_course_directory.
 
 // check the communication token
 $hub = new local_hub();
@@ -43,23 +43,36 @@ if (!empty($token) && !empty($communication) and get_config('local_hub', 'hubena
     $siteurl = $communication->remoteurl;
     $site = $hub->get_site_by_url($siteurl);
 
-    //check that the course exist
-    $course = $DB->get_record('hub_course_directory',
-                    array('id' => $courseid, 'siteid' => $site->id));
+    // Check that the course exist.
+    $hubcourse = $DB->get_record(
+        'hub_course_directory',
+        [
+            'id' => $hubcourseid,
+            'siteid' => $site->id
+        ]
+    );
 
-    if (!empty($course) && !empty($_FILES)) {
+    // TODO: Was passiert, wenn ein Kurs mehrfach hochgeladen/aktualisiert werden muss.
+    if (!empty($hubcourse) && !empty($_FILES)) {
         switch ($filetype) {
             case HUB_BACKUP_FILE_TYPE:
                 //check that the backup doesn't already exist
-                $backup = $hub->backup_exits($courseid);
+                $backup = $hub->backup_exits($site->id, $hubcourse->sitecourseid);
+
                 if (empty($backup)) {
-                    $hub->add_backup($_FILES['file'], $courseid);
+                    $hub->add_backup($_FILES['file'], $hubcourse);
                 }
+                $event = \local_hub\event\backup_uploaded::create(
+                    [
+                        'context' => context_system::instance(),
+                        'other' => json_encode(['siteinfo' => $site, 'courseinfo' => $hubcourse])
+                    ]
+                );
+                $event->trigger();
                 break;
             case HUB_SCREENSHOT_FILE_TYPE:
-                $hub->add_screenshot($_FILES['file'], $courseid, $screenshotnumber);
+                $hub->add_screenshot($_FILES['file'], $site->id, $hubcourse->sitecourseid, $screenshotnumber);
                 break;
         }
     }
 }
-

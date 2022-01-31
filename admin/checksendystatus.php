@@ -51,9 +51,9 @@ if ($data = $mform->get_data()) {
          $sendyapikey = $CFG->sendyapikey;
     }
 
-    if (empty($sendyurl) || empty($sendylistid) || empty($sendyapikey)) {
-        print_error('mailinglistnotconfigured', 'local_hub');
-    }
+//     if (empty($sendyurl) || empty($sendylistid) || empty($sendyapikey)) {
+//         print_error('mailinglistnotconfigured', 'local_hub');
+//     }
 
     $a = new stdClass();
     $a->email = $data->email;

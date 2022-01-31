@@ -1,0 +1,502 @@
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","givememore":0}}
+{"search":"","options":{"coverage":"all","subject":"","orderby":1,"givememore":0}}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":2,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"dateReverse","publishtype":2,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":2,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":2,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"coverage":"all","publishtype":2,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"alphabet","publishtype":2,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":2,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":2,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"coverage":"all","publishtype":2,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":2,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":2,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"date","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":2}}
+GET Courses {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":2}}
+GET Courses {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":2}}
+GET Courses {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":0}}
+GET Courses {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":0}}
+GET Courses {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":0}}
+GET Courses {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":0,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":2}}
+GET Courses {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":1}}
+GET Courses {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":1,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :enrollable
+{"visible":1,"enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"dateReverse","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"date","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"date","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"dateReverse","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"dateReverse","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"alphabet","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"alphabet","publishtype":1,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":1,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :enrollable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","enrollable":1}
+{"search":"Martha","options":{"coverage":"all","subject":"","orderby":"alphabet","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"Martha","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :downloadable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"alphabet","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":"Martha"}
+ privacy = :visible AND ( LOWER(fullname) LIKE LOWER(:namesearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(description) LIKE LOWER(:descsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(creatorname) LIKE LOWER(:creatorsearch) COLLATE utf8mb4_bin ESCAPE '\\' OR LOWER(coverage) LIKE LOWER(:coveragesearch) COLLATE utf8mb4_bin ESCAPE '\\' ) AND enrollable = :downloadable
+{"visible":1,"namesearch":"%Martha%","descsearch":"%Martha%","creatorsearch":"%Martha%","coveragesearch":"%Martha%","downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":2}}
+GET Courses {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":0,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":0,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND enrollable = :downloadable
+{"visible":1,"downloadable":0}
+{"search":"","options":{"coverage":"all","subject":"","orderby":"relevance","publishtype":2,"givememore":0}}
+GET Courses {"coverage":"all","publishtype":2,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"coverage":"all","publishtype":2,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0}}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"coverage":"all","publishtype":2,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"coverage":"all","publishtype":2,"subject":"","orderby":"relevance","givememore":0,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"search":null,"options":{"orderby":"newest","defaultlimit":10,"publishtype":2}}
+GET Courses {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}
+Params EXTERNAL LIB:  {"search":"","options":{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0}}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}
+{"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+Params: {"publishtype":2,"orderby":"newest","defaultlimit":10,"allsitecourses":0,"onlyvisible":true,"search":""}
+ privacy = :visible AND (enrollable = :enrollable OR  enrollable = :downloadable )
+{"visible":1,"enrollable":1,"downloadable":0}

@@ -21,7 +21,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 require_once($CFG->dirroot . "/" . $CFG->admin . "/registration/lib.php");
-require_once($CFG->dirroot . "/course/publish/lib.php");
+// require_once($CFG->dirroot . '/admin/tool/customhub/classes/course_publish_manager.php');
 
 /**
  * Hub renderer.
@@ -491,9 +491,11 @@ class local_hub_renderer extends plugin_renderer_base {
                                 array('class' => 'hubcourseuserinfo'));
 
                 //create course content related information html
-                $course->subject = get_string($course->subject, 'edufields');
+
+                // MBS-TODO $course->subject ist kommaseparierte Liste von Fächer-IDs. => Umschreiben in Klartext.
+                $course->subject = $course->subject; //get_string($course->subject, 'edufields');
                 $course->audience = get_string('audience' . $course->audience, 'hub');
-                $course->educationallevel = get_string('edulevel' . $course->educationallevel, 'hub');
+                // $course->educationallevel = get_string('edulevel' . $course->educationallevel, 'hub');
                 $coursecontentinfo = '';
                 if (empty($course->coverage)) {
                     $course->coverage = '';
@@ -582,7 +584,7 @@ class local_hub_renderer extends plugin_renderer_base {
                     $params['filetype'] = HUB_BACKUP_FILE_TYPE;
                     $params['remotemoodleurl'] = $CFG->wwwroot;
                     $addurl = new moodle_url('/local/hub/webservice/download.php', $params);
-                    $downloadbuttonhtml = html_writer::tag('a', get_string('download', 'block_community'),
+                    $downloadbuttonhtml = html_writer::tag('a', get_string('download'),
                                     array('href' => $addurl, 'class' => 'centeredbutton, hubcoursedownload'));
                 }
 
@@ -792,7 +794,7 @@ class local_hub_renderer extends plugin_renderer_base {
                         $admindisplayedinfo->timemodified = '-';
                     }
 
-                    $registrationmanager = new registration_manager();
+                    $registrationmanager = new \tool_customhub\registration_manager();
                     $admindisplayedinfo->privacy =
                             $registrationmanager->get_site_privacy_string($site->privacy);
                     $admindisplayedinfo->contactable = $site->contactable ?
