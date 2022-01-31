@@ -521,3 +521,12 @@ $string['eventname_restore_error_occured'] = 'A backup restore error occured: St
 $string['eventname_course_registration_finished'] = 'The course was registered at the hub.';
 $string['eventname_course_restore_completed'] = 'The course was restored at the hub.';
 $string['eventname_get_courses_called'] = 'Get courses WS was called.';
+
+$string['datedesc'] = 'Date (new ... old)';
+$string['ratingsort'] = 'Rating (5 ... 0)';
+$string['relevance'] = 'Relevance';
+$string['dateasc'] = 'Date (old ... new)';
+$string['alphabetasc'] = 'Alphabetically (A ... Z)';
+$string['alphabetdesc'] = 'nach Alphabetically (Z ... A)';
+$string['downloadable'] = 'Courses I can download';
+$string['enrollable'] = 'Courses I can enrol in';

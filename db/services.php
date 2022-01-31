@@ -89,6 +89,13 @@ $functions = array(
                 'type'        => 'write',
                 'capabilities' => 'local/hub:viewinfo'
         ),
+        'hub_get_forminfo' => [
+                'classname'     => 'local_hub_external',
+                'methodname'    => 'get_forminfo',
+                'classpath'     => 'local/hub/externallib.php',
+                'description'   => 'Get forminformation.',
+                'type'          => 'read'
+        ],
 );
 
 $services = array(
@@ -97,14 +104,21 @@ $services = array(
                 'enabled'=>1,
         ),
 
-        'Registered site' => array(
-                'functions' => array ('hub_update_site_info', 'hub_register_courses', 
-                    'hub_get_courses', 'hub_unregister_courses', 'hub_unregister_site', 'hub_get_info'),
-                'enabled'=>1,
-        ),
+        'Registered site' => [
+                'functions' => [
+                        'hub_update_site_info',
+                        'hub_register_courses',
+                        'hub_get_courses',
+                        'hub_unregister_courses',
+                        'hub_unregister_site',
+                        'hub_get_info',
+                        'hub_get_forminfo'
+                ],
+                'enabled' => 1,
+        ],
 
         'Public site' => array(
-                'functions' => array ('hub_get_courses'),
+                'functions' => array ('hub_get_courses', 'hub_get_forminfo'),
                 'enabled'=>1,
         ),
 

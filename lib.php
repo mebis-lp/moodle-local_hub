@@ -370,6 +370,7 @@ class local_hub {
      */
     public function get_courses($options = [], $limitfrom=0, $limitnum=0, $countresult = false) {
         global $DB;
+        \local_hub\debug\local_hub_debug::write_to_file($options, 'Params: ');
 
         $event = \local_hub\event\get_courses_called::create(
             [
@@ -404,33 +405,37 @@ class local_hub {
             $sqlparams['coveragesearch'] = '%' . $options['search'] . '%';
         }
 
-        
-        if ($options['enrollable'] && $options['downloadable']) {
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
-            $wheresql .= " (enrollable = :enrollable";
-            $sqlparams['enrollable'] = $options['enrollable'];
-            $wheresql .= ' OR ';
-            $wheresql .= " enrollable = :downloadable )";
-            $sqlparams['downloadable'] = !$options['downloadable']; 
+        switch ($options['publishtype']) {
+            case \local_hub\local\search_options::PUBLISH_TYPE_ALL:
+                if (!empty($wheresql)) {
+                    $wheresql .= " AND";
+                }
+                $wheresql .= " (enrollable = :enrollable";
+                $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
+                $wheresql .= ' OR ';
+                $wheresql .= " enrollable = :downloadable )";
+                $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
+                break;
+
+            case \local_hub\local\search_options::PUBLISH_TYPE_DOWNLOADABLE:
+                if (!empty($wheresql)) {
+                    $wheresql .= " AND";
+                }
+                $wheresql .= " enrollable = :downloadable";
+                $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
+                break;
+
+            case \local_hub\local\search_options::PUBLISH_TYPE_ENROLLABLE:
+                if (!empty($wheresql)) {
+                    $wheresql .= " AND";
+                }
+                $wheresql .= " enrollable = :enrollable";
+                $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
+                break;
         }
 
-        if ($options['enrollable'] && !$options['downloadable']) {
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
-            $wheresql .= " enrollable = :enrollable";
-            $sqlparams['enrollable'] = $options['enrollable'];
-        }
-
-        if (!$options['enrollable'] && $options['downloadable']) {
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
-            $wheresql .= " enrollable = :downloadable";
-            $sqlparams['downloadable'] = !$options['downloadable']; 
-        }
+        \local_hub\debug\local_hub_debug::write_to_file($wheresql);
+        \local_hub\debug\local_hub_debug::write_to_file($sqlparams);
 
 
         if (!empty($options['language'])) {
@@ -457,27 +462,27 @@ class local_hub {
             $sqlparams['licenceshortname'] = $options['licenceshortname'];
         }
 
-        if (!empty($options['subject'])) {
-            if (!empty($wheresql)) {
-                $wheresql .= " AND";
-            }
-            //search subject and all sub-subjects
-            $edufields = get_string_manager()->load_component_strings('edufields', 'en');
-            $topsubject = true;
-            foreach ($edufields as $key => $value) {
-                if (strpos($key, $options['subject']) !== false) {
-                    if ($topsubject) {
-                        $wheresql .= " (";
-                        $topsubject = false;
-                    } else {
-                        $wheresql .= " OR";
-                    }
-                    $wheresql .= " subject = :" . $key;
-                    $sqlparams[$key] = $key;
-                }
-            }
-            $wheresql .= ")";
-        }
+        // if (!empty($options['subject'])) {
+        //     if (!empty($wheresql)) {
+        //         $wheresql .= " AND";
+        //     }
+        //     //search subject and all sub-subjects
+        //     $edufields = get_string_manager()->load_component_strings('edufields', 'en');
+        //     $topsubject = true;
+        //     foreach ($edufields as $key => $value) {
+        //         if (strpos($key, $options['subject']) !== false) {
+        //             if ($topsubject) {
+        //                 $wheresql .= " (";
+        //                 $topsubject = false;
+        //             } else {
+        //                 $wheresql .= " OR";
+        //             }
+        //             $wheresql .= " subject = :" . $key;
+        //             $sqlparams[$key] = $key;
+        //         }
+        //     }
+        //     $wheresql .= ")";
+        // }
 
         if (!empty($options['educationallevel'])) {
             if (!empty($wheresql)) {
@@ -617,15 +622,23 @@ class local_hub {
                                     SELECT itemid, AVG(rating) AS ratingaverage, COUNT(id) AS ratingcount
                                     FROM {rating} GROUP BY itemid
                                   ) r ON r.itemid = c.id ';
-
-            //sort result
+                                  
+            // Sort result.
             $ordersql = '';
             if (!empty($options['orderby'])) {
-                $ordersql = ' ORDER BY ' . $options['orderby'];
+                $sortoptions = \local_hub\local\search_options::get_sort_options();
+                foreach ($sortoptions as $sortoption) {
+                    if ($sortoption['value'] == $options['orderby']) {
+                        $ordersql = ' ORDER BY c.' . $sortoption['col'] . ' ' . $sortoption['direction'];
+                    }
+                }
             }
 
             $sql = 'SELECT c.* ' . $extracolumns . 'FROM {hub_course_directory} c ' . $joinsql . ' WHERE '
                     . $wheresql . $ordersql;
+
+            \local_hub\debug\local_hub_debug::write_to_file($options);
+            // \local_hub\debug\local_hub_debug::write_to_file($sql);
 
             $courses = $DB->get_records_sql($sql, $sqlparams, $limitfrom, $limitnum);
         }

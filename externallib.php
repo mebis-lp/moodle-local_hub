@@ -29,6 +29,8 @@ require_once($CFG->dirroot . "/local/hub/lib.php");
 require_once($CFG->dirroot . "/local/hub/classes/local/local_hub_helper.php");
 class local_hub_external extends external_api {
 
+    const DEFAULTSEARCHLIMIT = 10;
+
     /**
      * Returns description of method parameters
      * @return external_function_parameters
@@ -471,29 +473,37 @@ class local_hub_external extends external_api {
      */
     public static function get_courses_parameters() {
         return new external_function_parameters(
-                array(
-                    'search' => new external_value(PARAM_TEXT, 'string to search'),
-                    'downloadable' => new external_value(PARAM_BOOL, 'course can be downloadable'),
-                    'enrollable' => new external_value(PARAM_BOOL, 'course can be enrollable'),
-                    'options' => new external_single_structure(
-                            array(
-                                'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the hub course directory'), 'ids of course', VALUE_OPTIONAL),
-                                'sitecourseids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the site'), 'ids of course in the site', VALUE_OPTIONAL),
-                                'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
-                                'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
-                                'subject' => new external_value(PARAM_ALPHANUM, 'subject', VALUE_OPTIONAL),
-                                'audience' => new external_value(PARAM_ALPHA, 'audience', VALUE_OPTIONAL),
-                                'educationallevel' => new external_value(PARAM_ALPHA, 'educational level', VALUE_OPTIONAL),
-                                'language' => new external_value(PARAM_ALPHANUMEXT, 'language', VALUE_OPTIONAL),
-                                'orderby' => new external_value(PARAM_ALPHA, 'orderby method: newest, eldest, publisher, fullname, ratingaverage', VALUE_OPTIONAL),
-                                'givememore' => new external_value(PARAM_INT, 'next range of result - range size being set by the hub server ', VALUE_OPTIONAL),
-                                'allsitecourses' => new external_value(PARAM_INT,
-                                        'if 1 return all not visible and visible courses whose siteid is the site
+            [
+                'search' => new external_value(PARAM_TEXT, 'string to search'),
+                // 'downloadable' => new external_value(PARAM_BOOL, 'course can be downloadable'),
+                // 'enrollable' => new external_value(PARAM_BOOL, 'course can be enrollable'),
+                'options' => new external_single_structure(
+                    [
+                        'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the hub course directory'), 'ids of course', VALUE_OPTIONAL),
+                        'sitecourseids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the site'), 'ids of course in the site', VALUE_OPTIONAL),
+                        'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
+                        'publishtype' => new external_value(PARAM_INT, 'Course enrolable, downloadable etc.'),
+                        'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
+                        'subject' => new external_value(PARAM_ALPHANUM, 'subject', VALUE_OPTIONAL),
+                        'audience' => new external_value(PARAM_ALPHA, 'audience', VALUE_OPTIONAL),
+                        'educationallevel' => new external_value(PARAM_ALPHA, 'educational level', VALUE_OPTIONAL),
+                        'language' => new external_value(PARAM_ALPHANUMEXT, 'language', VALUE_OPTIONAL),
+                        'orderby' => new external_value(PARAM_ALPHA, 'orderby method: newest, eldest, publisher, fullname, ratingaverage', VALUE_OPTIONAL),
+                        'givememore' => new external_value(PARAM_INT, 'next range of result - range size being set by the hub server ', VALUE_OPTIONAL),
+                        'defaultlimit' => new external_value(PARAM_INT, 'Limit of sql search results for default courses', VALUE_OPTIONAL),
+                        'allsitecourses' => new external_value(
+                            PARAM_INT,
+                            'if 1 return all not visible and visible courses whose siteid is the site
                                          matching token. Only courses of this site are returned.
                                          givememore parameter is ignored if this param = 1.
-                                         In case of public token access, this param option is ignored', VALUE_DEFAULT, 0),
-                            ), 'course info')
+                                         In case of public token access, this param option is ignored',
+                            VALUE_DEFAULT,
+                            0
+                        ),
+                    ],
+                    'course info'
                 )
+            ]
         );
     }
 
@@ -501,20 +511,22 @@ class local_hub_external extends external_api {
      * Get courses
      * @return array courses
      */
-    public static function get_courses($search, $downloadable, $enrollable, $options = array()) {
+    public static function get_courses($search, $options = []) {
         global $DB, $CFG, $USER;
-
+        
         // Ensure the current user is allowed to run this function
         $context = context_system::instance();
         self::validate_context($context);
         require_capability('local/hub:view', $context);
 
+        \local_hub\debug\local_hub_debug::write_to_file($options, 'GET Courses ');
+
         $params = self::validate_parameters(
             self::get_courses_parameters(),
             [
                 'search' => $search,
-                'downloadable' => $downloadable,
-                'enrollable' => $enrollable,
+                // 'downloadable' => $downloadable,
+                // 'enrollable' => $enrollable,
                 'options' => $options
             ]
         );
@@ -538,32 +550,9 @@ class local_hub_external extends external_api {
         $cleanedoptions = $params['options'];
         $cleanedoptions['onlyvisible'] = $onlyvisible;
         $cleanedoptions['search'] = $params['search'];
-        $cleanedoptions['downloadable'] = $params['downloadable'];
-        $cleanedoptions['enrollable'] = $params['enrollable'];
-
-        //sort method
-        if (!empty($params['options']['orderby'])) {
-            switch ($params['options']['orderby']) {
-                case 'newest':
-                    $cleanedoptions['orderby'] = 'timemodified DESC';
-                    break;
-                case 'eldest':
-                    $cleanedoptions['orderby'] = 'timemodified ASC';
-                    break;
-                case 'publisher':
-                    $cleanedoptions['orderby'] = 'publishername ASC';
-                    break;
-                case 'fullname':
-                    $cleanedoptions['orderby'] = 'fullname ASC';
-                    break;
-                case 'ratingaverage':
-                    $cleanedoptions['orderby'] = 'ratingaverage DESC';
-                    break;
-                default:
-                    unset($cleanedoptions['orderby']);
-                    break;
-            }
-        }
+        // $cleanedoptions['downloadable'] = $params['downloadable'];
+        // $cleanedoptions['enrollable'] = $params['enrollable'];
+        \local_hub\debug\local_hub_debug::write_to_file($params, 'Params EXTERNAL LIB:  ');
 
         //retrieve the range of courses to return
         $maxcourses = get_config('local_hub', 'maxwscourseresult');
@@ -576,6 +565,9 @@ class local_hub_external extends external_api {
         if (!empty($params['options']['siteid'])) {
             $maxcourses = 0;
             $limitfrom = 0;
+        } else if (!empty($params['options']['defaultlimit'])) {
+            $limitfrom = 0;
+            $maxcourses = self::DEFAULTSEARCHLIMIT;
         } else {
             //the site is doing a normal courses request (not focussed on its own courses)
             //the hub server limit the return number of course
@@ -690,6 +682,8 @@ class local_hub_external extends external_api {
                 $coursesresult[] = $courseinfo;
             }
         }
+        // \local_hub\debug\local_hub_debug::write_to_file(['courses' => $coursesresult, 'coursetotal' => $coursetotal]);
+
         return ['courses' => $coursesresult, 'coursetotal' => $coursetotal];
     }
 
@@ -1241,5 +1235,159 @@ class local_hub_external extends external_api {
                             'timelastsynced' => new external_value(PARAM_INT, 'time of sync used in records'),
                         )
                 );
+    }
+
+
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function get_forminfo_parameters() {
+        return new external_function_parameters(
+                []
+        );
+    }
+
+    /**
+     * Return hub information
+     * @return hub
+     */
+    public static function get_forminfo() {
+        // Ensure the current user is allowed to run this function
+        $context = context_system::instance();
+        self::validate_context($context);
+
+        //viewsmallinfo: registered site
+        if (!has_capability('local/hub:viewinfo', $context)
+                and !has_capability('local/hub:viewsmallinfo', $context)) {
+            throw new moodle_exception('nocapabalitytogetinfo', 'local_hub');
+        }
+
+        //not useful to validate no params, but following line just here to remind u ;)
+        self::validate_parameters(self::get_forminfo_parameters(), []);
+
+        $formtags = \local_hub\local\tag_options::get_all_formtags();
+        // \local_hub\debug\local_hub_debug::write_to_file($formtags);
+        $sortoptions = \local_hub\local\search_options::get_sort_options();
+        $searchforoptions = \local_hub\local\search_options::get_searchfor_options();
+        return (object)[
+            'tagtypes' => $formtags,
+            'tags_total' => count($formtags),
+            'searchoptions' => $sortoptions,
+            'searchforoptions' => $searchforoptions,
+            'defaultsearchlimit' => self::DEFAULTSEARCHLIMIT,
+        ];
+    }
+
+
+
+    /**
+     * Returns description of method result value
+     * @return boolean
+     */
+    public static function get_forminfo_returns() {
+
+        return new external_single_structure(
+            [
+                'tagtypes' => new external_single_structure(
+                    [
+                        'subject' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'subject',
+                            VALUE_REQUIRED
+                        ),
+                        'schooltype' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'schooltype',
+                            VALUE_OPTIONAL
+                        ),
+                        'schoolyear' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'schoolyear',
+                            VALUE_OPTIONAL
+                        ),
+                        'compuse' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'compuse',
+                            VALUE_OPTIONAL
+                        ),
+                        'oer' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'oer',
+                            VALUE_OPTIONAL
+                        ),
+                        'tag' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'tag',
+                            VALUE_OPTIONAL
+                        ),
+                        'author' => new external_multiple_structure(
+                            new external_single_structure(
+                                [
+                                    'id' =>  new external_value(PARAM_INT, 'Tag ID'),
+                                    'text' => new external_value(PARAM_TEXT, 'Tagvalue'),
+                                ]
+                            ),
+                            'author',
+                            VALUE_OPTIONAL
+                        ),
+                    ],
+                ),
+                'tags_total' => new external_value(PARAM_INT, 'total number of courses', VALUE_OPTIONAL),
+                'searchoptions' => new external_multiple_structure(
+                    new external_single_structure(
+                        [
+                            'value' =>  new external_value(PARAM_TEXT, 'Option value'),
+                            'text' => new external_value(PARAM_TEXT, 'Option text'),
+                        ]
+                    ),
+                    'subject',
+                    VALUE_OPTIONAL
+                ),
+                'searchforoptions' => new external_multiple_structure(
+                    new external_single_structure(
+                        [
+                            'value' =>  new external_value(PARAM_TEXT, 'Option value'),
+                            'text' => new external_value(PARAM_TEXT, 'Option text'),
+                        ]
+                    ),
+                    'subject',
+                    VALUE_OPTIONAL
+                ),
+                'defaultsearchlimit' => new external_value(PARAM_INT, 'sql result limit', VALUE_OPTIONAL),
+            ],
+            'form tags'
+        );
     }
 }

@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+require_once($CFG->dirroot . "/local/hub/db/upgradelib.php");
+
 /**
  * Hub install
  * @package   localhub
@@ -44,4 +46,8 @@ function xmldb_local_hub_install() {
 
     // Set the extendedusernamechars option to true
     set_config('extendedusernamechars', 1);
+
+
+    set_default_tag_options();
+
 }
