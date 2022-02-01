@@ -370,7 +370,7 @@ class local_hub {
      */
     public function get_courses($options = [], $limitfrom=0, $limitnum=0, $countresult = false) {
         global $DB;
-        \local_hub\debug\local_hub_debug::write_to_file($options, 'Params: ');
+        // \local_hub\debug\local_hub_debug::write_to_file($options, 'Params: ');
 
         $event = \local_hub\event\get_courses_called::create(
             [
@@ -405,38 +405,38 @@ class local_hub {
             $sqlparams['coveragesearch'] = '%' . $options['search'] . '%';
         }
 
-        switch ($options['publishtype']) {
-            case \local_hub\local\search_options::PUBLISH_TYPE_ALL:
-                if (!empty($wheresql)) {
-                    $wheresql .= " AND";
-                }
-                $wheresql .= " (enrollable = :enrollable";
-                $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
-                $wheresql .= ' OR ';
-                $wheresql .= " enrollable = :downloadable )";
-                $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
-                break;
+        if (isset($options['publishtype'])) {
+            switch ($options['publishtype']) {
+                case \local_hub\local\search_options::PUBLISH_TYPE_ALL:
+                    if (!empty($wheresql)) {
+                        $wheresql .= " AND";
+                    }
+                    $wheresql .= " (enrollable = :enrollable";
+                    $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
+                    $wheresql .= ' OR ';
+                    $wheresql .= " enrollable = :downloadable )";
+                    $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
+                    break;
 
-            case \local_hub\local\search_options::PUBLISH_TYPE_DOWNLOADABLE:
-                if (!empty($wheresql)) {
-                    $wheresql .= " AND";
-                }
-                $wheresql .= " enrollable = :downloadable";
-                $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
-                break;
+                case \local_hub\local\search_options::PUBLISH_TYPE_DOWNLOADABLE:
+                    if (!empty($wheresql)) {
+                        $wheresql .= " AND";
+                    }
+                    $wheresql .= " enrollable = :downloadable";
+                    $sqlparams['downloadable'] = \local_hub\local\search_options::IS_DOWNLOADABLE;
+                    break;
 
-            case \local_hub\local\search_options::PUBLISH_TYPE_ENROLLABLE:
-                if (!empty($wheresql)) {
-                    $wheresql .= " AND";
-                }
-                $wheresql .= " enrollable = :enrollable";
-                $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
-                break;
+                case \local_hub\local\search_options::PUBLISH_TYPE_ENROLLABLE:
+                    if (!empty($wheresql)) {
+                        $wheresql .= " AND";
+                    }
+                    $wheresql .= " enrollable = :enrollable";
+                    $sqlparams['enrollable'] = \local_hub\local\search_options::IS_ENROLLABLE;
+                    break;
+                default:
+                    break;
+            }
         }
-
-        \local_hub\debug\local_hub_debug::write_to_file($wheresql);
-        \local_hub\debug\local_hub_debug::write_to_file($sqlparams);
-
 
         if (!empty($options['language'])) {
             if (!empty($wheresql)) {
@@ -584,6 +584,8 @@ class local_hub {
             }
             $wheresql .= " siteid = :siteid";
             $sqlparams['siteid'] = $options['siteid'];
+            // \local_hub\debug\local_hub_debug::write_to_file($wheresql);
+            // \local_hub\debug\local_hub_debug::write_to_file($sqlparams);
         }
 
         if (!empty($options['lastmodified'])) {
@@ -637,7 +639,7 @@ class local_hub {
             $sql = 'SELECT c.* ' . $extracolumns . 'FROM {hub_course_directory} c ' . $joinsql . ' WHERE '
                     . $wheresql . $ordersql;
 
-            \local_hub\debug\local_hub_debug::write_to_file($options);
+            // \local_hub\debug\local_hub_debug::write_to_file($options);
             // \local_hub\debug\local_hub_debug::write_to_file($sql);
 
             $courses = $DB->get_records_sql($sql, $sqlparams, $limitfrom, $limitnum);

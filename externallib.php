@@ -482,7 +482,7 @@ class local_hub_external extends external_api {
                         'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the hub course directory'), 'ids of course', VALUE_OPTIONAL),
                         'sitecourseids' => new external_multiple_structure(new external_value(PARAM_INT, 'id of a course in the site'), 'ids of course in the site', VALUE_OPTIONAL),
                         'coverage' => new external_value(PARAM_TEXT, 'coverage', VALUE_OPTIONAL),
-                        'publishtype' => new external_value(PARAM_INT, 'Course enrolable, downloadable etc.'),
+                        'publishtype' => new external_value(PARAM_INT,'Course enrolable, downloadable etc.', VALUE_OPTIONAL),
                         'licenceshortname' => new external_value(PARAM_ALPHANUMEXT, 'licence short name', VALUE_OPTIONAL),
                         'subject' => new external_value(PARAM_ALPHANUM, 'subject', VALUE_OPTIONAL),
                         'audience' => new external_value(PARAM_ALPHA, 'audience', VALUE_OPTIONAL),
@@ -519,7 +519,7 @@ class local_hub_external extends external_api {
         self::validate_context($context);
         require_capability('local/hub:view', $context);
 
-        \local_hub\debug\local_hub_debug::write_to_file($options, 'GET Courses ');
+        // \local_hub\debug\local_hub_debug::write_to_file($options, 'GET Courses ');
 
         $params = self::validate_parameters(
             self::get_courses_parameters(),
@@ -552,7 +552,7 @@ class local_hub_external extends external_api {
         $cleanedoptions['search'] = $params['search'];
         // $cleanedoptions['downloadable'] = $params['downloadable'];
         // $cleanedoptions['enrollable'] = $params['enrollable'];
-        \local_hub\debug\local_hub_debug::write_to_file($params, 'Params EXTERNAL LIB:  ');
+        // \local_hub\debug\local_hub_debug::write_to_file($params, 'Params EXTERNAL LIB:  ');
 
         //retrieve the range of courses to return
         $maxcourses = get_config('local_hub', 'maxwscourseresult');
